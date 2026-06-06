@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Implant Stock">
+<meta name="theme-color" content="#0b6f62">
+<title>Implant Stock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef0f1;
+    --paper:#ffffff;
+    --ink:#16211f;
+    --muted:#6b7578;
+    --line:#e0e4e5;
+    --line-strong:#c9cfd0;
+    --accent:#0b6f62;
+    --accent-soft:#e3f1ee;
+    --warn:#b5790f;
+    --warn-soft:#fbf1dc;
+    --danger:#b53a35;
+    --danger-soft:#fbe6e4;
+    --ok:#0b6f62;
+    --sans:'Archivo',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --r:14px;
+    --shadow:0 1px 2px rgba(20,33,31,.06),0 4px 16px rgba(20,33,31,.05);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:
+      linear-gradient(var(--bg),var(--bg)),
+      repeating-linear-gradient(0deg,transparent 0 23px,rgba(11,111,98,.035) 23px 24px),
+      repeating-linear-gradient(90deg,transparent 0 23px,rgba(11,111,98,.035) 23px 24px);
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.4;
+  }
+  .app{max-width:540px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0) 240px);}
+  /* header */
+  header{position:sticky;top:0;z-index:20;background:var(--paper);
+    border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 16px 0;}
+  .hbar{display:flex;align-items:center;gap:10px;padding:13px 0 12px;}
+  .logo{width:30px;height:30px;border-radius:8px;background:var(--accent);position:relative;flex:0 0 auto;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);}
+  .logo:before{content:"";position:absolute;inset:8px;border-radius:50%;background:#fff;opacity:.92}
+  .logo:after{content:"";position:absolute;left:13px;top:9px;width:4px;height:12px;border-radius:2px;background:var(--accent)}
+  h1{font-size:16px;font-weight:800;letter-spacing:.02em;margin:0;flex:1}
+  h1 small{display:block;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .gear{appearance:none;border:1px solid var(--line);background:var(--paper);width:38px;height:38px;border-radius:10px;
+    display:grid;place-items:center;cursor:pointer;color:var(--ink);font-size:17px}
+  .gear:active{background:var(--bg)}
+  /* stat strip */
+  .stats{display:flex;gap:8px;padding:0 0 13px}
+  .stat{flex:1;border:1px solid var(--line);border-radius:11px;padding:9px 10px;background:linear-gradient(180deg,#fff,#fbfcfc)}
+  .stat .k{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .stat .v{font-family:var(--mono);font-size:19px;font-weight:700;margin-top:2px}
+  .stat .v small{font-size:11px;color:var(--muted);font-weight:500}
+  /* content */
+  main{flex:1;padding:16px 16px 96px}
+  .view{display:none;animation:fade .25s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
+    padding:15px;margin-bottom:14px}
+  .card h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 11px;font-weight:700}
+  .label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;display:block;margin:0 0 6px}
+  textarea,input[type=text],input[type=date],input[type=number]{
+    width:100%;font-family:var(--mono);font-size:15px;color:var(--ink);background:#fbfcfc;
+    border:1px solid var(--line-strong);border-radius:10px;padding:11px 12px;outline:none;}
+  textarea{min-height:128px;resize:vertical;line-height:1.6}
+  input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .row{display:flex;gap:10px;align-items:center}
+  .row>*{min-width:0}
+  .hint{font-size:11.5px;color:var(--muted);margin:8px 0 0;font-family:var(--mono)}
+  .hint b{color:var(--accent)}
+  /* buttons */
+  .btn{appearance:none;border:none;border-radius:11px;font-family:var(--sans);font-weight:700;font-size:14px;
+    padding:13px 16px;cursor:pointer;letter-spacing:.02em;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--accent);color:#fff;width:100%}
+  .btn-primary:disabled{background:var(--line-strong);color:#fff;cursor:default;transform:none}
+  .btn-ghost{background:var(--paper);border:1px solid var(--line-strong);color:var(--ink)}
+  .btn-sm{padding:7px 11px;font-size:12.5px;border-radius:9px}
+  .btn-danger{background:var(--danger);color:#fff}
+  /* preview */
+  .preview{margin-top:13px}
+  .pline{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:8px;background:#fbfcfc}
+  .pline.bad{border-color:var(--danger);background:var(--danger-soft)}
+  .pline.warn{border-color:var(--warn);background:var(--warn-soft)}
+  .pline .pname{font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .pline .pboxes{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
+  .pline .pded{font-family:var(--mono);font-size:13px;color:var(--accent);margin-top:5px;font-weight:500}
+  .pline .pmsg{font-size:11.5px;margin-top:5px;font-weight:600}
+  .pline.bad .pmsg{color:var(--danger)}
+  .pline.warn .pmsg{color:var(--warn)}
+  .chip{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--accent-soft);color:var(--accent);
+    padding:2px 7px;border-radius:6px;margin:0 4px 2px 0}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 8px;font-family:var(--mono)}
+  /* stock list */
+  .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+  .search{flex:1}
+  .toggle{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;white-space:nowrap}
+  .toggle input{appearance:none;width:34px;height:20px;border-radius:11px;background:var(--line-strong);position:relative;transition:.2s;cursor:pointer}
+  .toggle input:checked{background:var(--accent)}
+  .toggle input:before{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+  .toggle input:checked:before{left:16px}
+  .brandhdr{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:800;
+    margin:16px 4px 7px;display:flex;justify-content:space-between}
+  .brandhdr span{color:var(--muted);font-family:var(--mono)}
+  .srow{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;
+    margin-bottom:6px;background:var(--paper)}
+  .srow .code{font-family:var(--mono);font-weight:700;font-size:13px;width:74px}
+  .srow .desc{flex:1;font-size:12px;color:var(--muted)}
+  .srow .qty{font-family:var(--mono);font-weight:700;font-size:17px;min-width:34px;text-align:right}
+  .srow.low .qty{color:var(--warn)}
+  .srow.zero{opacity:.55}
+  .srow.neg{border-color:var(--danger);background:var(--danger-soft)}
+  .srow.neg .qty{color:var(--danger)}
+  .srow input[type=number]{width:62px;padding:7px 8px;text-align:center;font-size:14px}
+  .stepper{display:flex;align-items:center;gap:0}
+  .stepper button{width:30px;height:30px;border:1px solid var(--line-strong);background:#fbfcfc;font-size:17px;
+    font-weight:700;color:var(--ink);cursor:pointer;display:grid;place-items:center}
+  .stepper button:first-child{border-radius:8px 0 0 8px}
+  .stepper button:last-child{border-radius:0 8px 8px 0}
+  .stepper input{width:48px;border-radius:0;border-left:none;border-right:none;text-align:center;padding:6px 0}
+  /* history */
+  .datehdr{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:16px 2px 8px}
+  .hrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--paper)}
+  .hrow .hinfo{flex:1;min-width:0}
+  .hrow .hname{font-weight:700;font-size:13.5px}
+  .hrow .hded{font-family:var(--mono);font-size:12px;color:var(--accent);margin-top:2px}
+  .hrow .hundo{border:1px solid var(--line-strong);background:var(--paper);color:var(--danger);font-weight:700;
+    font-size:11px;padding:6px 10px;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
+  /* month-end */
+  .mrow{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--paper)}
+  .mrow .code{font-family:var(--mono);font-weight:700;font-size:12.5px;width:66px}
+  .mrow .exp{font-family:var(--mono);font-size:13px;color:var(--muted);width:58px;text-align:center}
+  .mrow input{width:58px;text-align:center;padding:7px 4px;font-size:14px}
+  .mrow .var{font-family:var(--mono);font-weight:700;font-size:13px;width:54px;text-align:right}
+  .mrow .var.off{color:var(--danger)}
+  .mrow .var.match{color:var(--ok)}
+  .mhead{display:flex;gap:8px;padding:0 10px 6px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .mhead .code{width:66px}.mhead .exp{width:58px;text-align:center}.mhead .inp{width:58px;text-align:center}.mhead .var{width:54px;text-align:right}
+  /* sheet / modal */
+  .sheet{position:fixed;inset:0;z-index:50;display:none}
+  .sheet.open{display:block}
+  .sheet .backdrop{position:absolute;inset:0;background:rgba(15,25,24,.4)}
+  .sheet .panel{position:absolute;left:0;right:0;bottom:0;max-width:540px;margin:0 auto;background:var(--bg);
+    border-radius:20px 20px 0 0;padding:8px 16px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;
+    animation:slideup .3s cubic-bezier(.2,.8,.2,1)}
+  @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
+  .grab{width:40px;height:4px;border-radius:2px;background:var(--line-strong);margin:8px auto 14px}
+  .sheet h2{font-size:14px;font-weight:800;margin:0 0 12px}
+  .minirow{display:flex;gap:8px;margin-bottom:8px}
+  .minirow .btn{flex:1}
+  /* bottom nav */
+  nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--paper);border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom)}
+  .navinner{max-width:540px;margin:0 auto;display:flex}
+  .nav-btn{flex:1;appearance:none;border:none;background:none;padding:9px 4px 8px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-family:var(--sans)}
+  .nav-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .nav-btn span{font-size:10px;font-weight:700;letter-spacing:.02em}
+  .nav-btn.active{color:var(--accent)}
+  .nav-btn .badge{position:absolute;transform:translate(13px,-4px);background:var(--accent);color:#fff;
+    font-family:var(--mono);font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;padding:0 3px;display:grid;place-items:center}
+  .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+    padding:11px 18px;border-radius:11px;font-size:13px;font-weight:600;z-index:60;opacity:0;transition:.3s;pointer-events:none;max-width:90%}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .divider{height:1px;background:var(--line);margin:14px 0}
+  .warnbox{background:var(--warn-soft);border:1px solid var(--warn);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--warn);font-weight:600;margin-top:10px}
+  .small{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="hbar">
+      <div class="logo"></div>
+      <h1>Implant Stock<small id="monthLabel">—</small></h1>
+      <button class="gear" id="openSetup" aria-label="Setup">⚙</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">In stock</div><div class="v" id="statStock">0<small> boxes</small></div></div>
+      <div class="stat"><div class="k">Used this month</div><div class="v" id="statUsed">0<small> boxes</small></div></div>
+      <div class="stat"><div class="k">Patients</div><div class="v" id="statPat">0</div></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- LOG -->
+    <section class="view active" id="view-log">
+      <div class="card">
+        <h2>Log usage</h2>
+        <div class="row" style="margin-bottom:12px">
+          <div style="flex:1"><span class="label">Date</span><input type="date" id="logDate"></div>
+        </div>
+        <span class="label">One patient per line — name + code</span>
+        <textarea id="logInput" placeholder="Mr. Sun  mv400&#10;Mrs. Maria  mts350/375&#10;Ms. Lee  eu375"></textarea>
+        <p class="hint">A plain code = 1 pair (<b>2 boxes</b>). A slash = 1 box each, e.g. <b>mts350/375</b>.</p>
+        <div class="preview" id="logPreview"></div>
+        <button class="btn btn-primary" id="applyBtn" style="margin-top:6px" disabled>Apply to stock</button>
+      </div>
+      <div class="card" id="todayCard" style="display:none">
+        <h2>Logged on <span id="todayDateLabel"></span></h2>
+        <div id="todayList"></div>
+      </div>
+    </section>
+
+    <!-- STOCK -->
+    <section class="view" id="view-stock">
+      <div class="card">
+        <div class="toolbar">
+          <input type="text" class="search" id="stockSearch" placeholder="Filter code / brand…">
+          <label class="toggle" title="Edit counts">Edit<input type="checkbox" id="editMode"></label>
+        </div>
+        <div id="stockEditNote" class="warnbox" style="display:none">Edit mode: type your physical counts. Tap <b>Set as month start</b> to lock today's baseline.</div>
+        <div id="stockList"></div>
+        <div id="stockEditActions" style="display:none;margin-top:12px">
+          <button class="btn btn-primary" id="setBaselineBtn">Set as month start (today)</button>
+          <p class="small">This saves the current counts as your starting baseline and begins a new month for the "used this month" tally. Do this right after your physical count.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="view" id="view-history">
+      <div class="card">
+        <h2>Usage history</h2>
+        <div class="toolbar"><input type="text" class="search" id="histSearch" placeholder="Filter name / code…"></div>
+        <div id="histList"></div>
+      </div>
+    </section>
+
+    <!-- MONTH END -->
+    <section class="view" id="view-month">
+      <div class="card">
+        <h2>Month-end check</h2>
+        <p class="small" style="margin-top:0">Count your physical stock and type each number. Variance = your count − expected. When it all matches, commit it as next month's baseline.</p>
+        <label class="toggle" style="margin:6px 0 12px">Show all sizes<input type="checkbox" id="monthShowAll"></label>
+        <div class="mhead"><span class="code">Code</span><span class="exp">Expect</span><span class="inp">Counted</span><span class="var">Var</span></div>
+        <div id="monthList"></div>
+        <div class="divider"></div>
+        <button class="btn btn-primary" id="commitMonthBtn">Commit count → start new month</button>
+        <p class="small">Sets stock to your counted numbers, archives this month, and resets the baseline to today.</p>
+      </div>
+      <div class="card" id="archiveCard" style="display:none">
+        <h2>Past months</h2>
+        <div id="archiveList"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav>
+    <div class="navinner">
+      <button class="nav-btn active" data-view="log"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Log</span></button>
+      <button class="nav-btn" data-view="stock"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Stock</span></button>
+      <button class="nav-btn" data-view="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg><span>History</span></button>
+      <button class="nav-btn" data-view="month"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 14l2 2 4-4"/></svg><span>Month-end</span></button>
+    </div>
+  </nav>
+</div>
+
+<!-- SETUP SHEET -->
+<div class="sheet" id="setupSheet">
+  <div class="backdrop" data-close></div>
+  <div class="panel">
+    <div class="grab"></div>
+    <h2>Setup &amp; backup</h2>
+    <div class="card">
+      <h2>Low-stock warning</h2>
+      <div class="row">
+        <span style="font-size:13px;flex:1">Highlight when boxes ≤</span>
+        <input type="number" id="threshInput" min="0" style="width:80px;text-align:center">
+      </div>
+    </div>
+    <div class="card">
+      <h2>Textured (Mentor)</h2>
+      <label class="toggle" style="text-transform:none;font-size:13px;color:var(--ink)">
+        Show textured line (mtt) in stock<input type="checkbox" id="texToggle">
+      </label>
+      <p class="small">Off by default. Turn on only if textured ever comes back to the clinic.</p>
+    </div>
+    <div class="card">
+      <h2>Backup</h2>
+      <div class="minirow">
+        <button class="btn btn-ghost" id="exportBtn">⬇ Export file</button>
+        <button class="btn btn-ghost" id="importBtn">⬆ Import file</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+      <p class="small">Data lives only on this phone. Export now and then so a lost/changed phone doesn't lose your stock.</p>
+    </div>
+    <div class="card">
+      <h2>Reset</h2>
+      <button class="btn btn-danger" id="resetBtn" style="width:100%">Erase all data</button>
+    </div>
+    <button class="btn btn-ghost" data-close style="width:100%;margin-top:4px">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ---------- catalog ---------- */
+const CATALOG = {
+  mv:  { brand:"Motiva",  surface:"",         sizes:[305,335,355,375,400,450,500] },
+  eu:  { brand:"Euro",    surface:"",         sizes:[280,300,325,350,375,400,450,500,550,600,650,700] },
+  mts: { brand:"Mentor",  surface:"smooth",   sizes:[275,300,325,350,375,400,450,500,550,600,650,700] },
+  sm:  { brand:"Silimed", surface:"",         sizes:[335,365,390,420,445] },
+  mtt: { brand:"Mentor",  surface:"textured", sizes:[275,300,325,350,375,400,450,500,550,600,650,700], optional:true },
+};
+const PREFIXES = Object.keys(CATALOG);
+const CODE_RE = new RegExp('('+PREFIXES.join('|')+')\\s*\\d{2,3}(?:\\s*\\/\\s*(?:(?:'+PREFIXES.join('|')+')\\s*)?\\d{2,3})*','i');
+const SEG_RE  = new RegExp('^('+PREFIXES.join('|')+')?(\\d{2,3})$');
+
+function allCodes(includeTex){
+  const out=[];
+  for(const p of PREFIXES){
+    if(CATALOG[p].optional && !includeTex) continue;
+    for(const s of CATALOG[p].sizes) out.push(p+s);
+  }
+  return out;
+}
+function splitCode(code){const m=code.match(new RegExp('^('+PREFIXES.join('|')+')(\\d{2,3})$'));return m?{prefix:m[1],size:+m[2]}:null;}
+function codeLabel(code){const c=splitCode(code);if(!c)return code;const cat=CATALOG[c.prefix];return cat.brand+" "+c.size+(cat.surface?" "+cat.surface:"")+" cc";}
+
+/* ---------- state ---------- */
+const KEY="implantStock.v1";
+let S=load();
+function blank(){return {stock:{},monthStart:todayStr(),log:[],archive:[],thresh:2,showTex:false};}
+function load(){
+  try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);return Object.assign(blank(),o);}}catch(e){}
+  return blank();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast("Could not save — storage blocked");}}
+
+/* ---------- helpers ---------- */
+function todayStr(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function fmtDate(s){if(!s)return"";const[y,m,d]=s.split("-");return d+" "+["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m-1]+" "+y;}
+function totalStock(){let t=0;for(const k in S.stock)t+=S.stock[k];return t;}
+function usedThisMonth(){let b=0,p=0;for(const e of S.log){if(e.date>=S.monthStart){p++;b+=e.boxes;}}return{boxes:b,patients:p};}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2200);}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ---------- parser ---------- */
+function parseLine(raw){
+  const line=raw.trim();
+  if(!line) return null;
+  const m=line.match(CODE_RE);
+  if(!m) return {raw:line,name:line,deductions:[],errors:["No implant code found"],boxes:0,valid:false};
+  let name=line.slice(0,m.index).replace(/[-=:,\s]+$/,"").trim();
+  if(!name) name="(no name)";
+  const spec=m[0].toLowerCase().replace(/\s+/g,"");
+  const segs=spec.split("/");
+  const isPair=segs.length===1;
+  let cur=null; const map={}; const errors=[];
+  for(const seg of segs){
+    const mm=seg.match(SEG_RE);
+    if(!mm){errors.push("Bad part: "+seg);continue;}
+    const pfx=mm[1]||cur; const size=+mm[2];
+    if(!pfx){errors.push("No brand for "+size);continue;}
+    cur=pfx;
+    const code=pfx+size; const qty=isPair?2:1;
+    map[code]=(map[code]||0)+qty;
+  }
+  const deductions=Object.entries(map).map(([code,qty])=>{
+    const c=splitCode(code); const cat=c&&CATALOG[c.prefix];
+    let warn=null;
+    if(!cat) warn="unknown brand";
+    else if(!cat.sizes.includes(c.size)) warn=c.size+" not a "+cat.brand+" size";
+    if(warn) errors.push(code+": "+warn);
+    return {code,qty,warn};
+  });
+  const boxes=deductions.reduce((s,d)=>s+d.qty,0);
+  const hard=deductions.some(d=>d.warn)||deductions.length===0;
+  return {raw:line,name,deductions,errors,boxes,valid:!hard};
+}
+function parseInput(text){return text.split(/\n+/).map(parseLine).filter(Boolean);}
+
+/* ---------- LOG view ---------- */
+const logInput=document.getElementById("logInput");
+const logPreview=document.getElementById("logPreview");
+const applyBtn=document.getElementById("applyBtn");
+const logDate=document.getElementById("logDate");
+
+function renderPreview(){
+  const lines=parseInput(logInput.value);
+  if(!lines.length){logPreview.innerHTML="";applyBtn.disabled=true;return;}
+  let anyValid=false;
+  logPreview.innerHTML=lines.map(l=>{
+    let cls="pline",msg="";
+    if(!l.valid){cls+=" bad";msg=l.errors.join(" · ");}
+    else{anyValid=true;if(l.boxes!==2){cls+=" warn";msg="⚠ "+l.boxes+" boxes on this line (usually 2). Check it.";}}
+    const ded=l.deductions.map(d=>'<span class="chip">'+esc(d.code.toUpperCase())+" ×"+d.qty+"</span>").join("");
+    return '<div class="'+cls+'"><div class="pname">'+esc(l.name)+
+      '<span class="pboxes">'+l.boxes+' box'+(l.boxes===1?"":"es")+'</span></div>'+
+      (ded?'<div class="pded">'+ded+'</div>':"")+
+      (msg?'<div class="pmsg">'+esc(msg)+'</div>':"")+'</div>';
+  }).join("");
+  applyBtn.disabled=!anyValid;
+}
+logInput.addEventListener("input",renderPreview);
+
+applyBtn.addEventListener("click",()=>{
+  const lines=parseInput(logInput.value);
+  const date=logDate.value||todayStr();
+  let applied=0; const leftover=[];
+  for(const l of lines){
+    if(!l.valid){leftover.push(l.raw);continue;}
+    S.log.push({id:Date.now()+"_"+Math.random().toString(36).slice(2,7),date,name:l.name,raw:l.raw,
+      deductions:l.deductions.map(d=>({code:d.code,qty:d.qty})),boxes:l.boxes});
+    for(const d of l.deductions) S.stock[d.code]=(S.stock[d.code]||0)-d.qty;
+    applied++;
+  }
+  save();
+  logInput.value=leftover.join("\n");
+  renderPreview(); renderAll();
+  if(leftover.length) toast(applied+" applied · "+leftover.length+" need fixing");
+  else toast(applied+" patient"+(applied===1?"":"s")+" logged");
+});
+
+function renderToday(){
+  const date=logDate.value||todayStr();
+  const items=S.log.filter(e=>e.date===date).reverse();
+  const card=document.getElementById("todayCard");
+  document.getElementById("todayDateLabel").textContent=fmtDate(date);
+  if(!items.length){card.style.display="none";return;}
+  card.style.display="";
+  document.getElementById("todayList").innerHTML=items.map(rowHistory).join("");
+}
+
+/* ---------- STOCK view ---------- */
+const stockList=document.getElementById("stockList");
+const editMode=document.getElementById("editMode");
+const stockSearch=document.getElementById("stockSearch");
+
+function renderStock(){
+  const edit=editMode.checked;
+  const q=stockSearch.value.trim().toLowerCase();
+  document.getElementById("stockEditNote").style.display=edit?"":"none";
+  document.getElementById("stockEditActions").style.display=edit?"":"none";
+  let html="";
+  for(const p of PREFIXES){
+    const cat=CATALOG[p];
+    if(cat.optional && !S.showTex) continue;
+    const rows=[];
+    for(const size of cat.sizes){
+      const code=p+size; const qty=S.stock[code]||0;
+      if(!edit && qty===0) continue;
+      if(q){const hay=(code+" "+cat.brand+" "+cat.surface).toLowerCase();if(!hay.includes(q))continue;}
+      let cls="srow";
+      if(qty<0)cls+=" neg"; else if(qty===0)cls+=" zero"; else if(qty<=S.thresh)cls+=" low";
+      const right=edit
+        ? '<div class="stepper"><button data-step="'+code+'" data-d="-1">−</button>'+
+          '<input type="number" data-code="'+code+'" value="'+qty+'"><button data-step="'+code+'" data-d="1">+</button></div>'
+        : '<div class="qty">'+qty+'</div>';
+      rows.push('<div class="'+cls+'"><div class="code">'+code.toUpperCase()+'</div>'+
+        '<div class="desc">'+esc(cat.surface||"—")+'</div>'+right+'</div>');
+    }
+    if(rows.length){
+      let sub=0; for(const size of cat.sizes) sub+=Math.max(0,S.stock[p+size]||0);
+      html+='<div class="brandhdr">'+esc(cat.brand)+(cat.surface?" · "+cat.surface:"")+'<span>'+sub+' boxes</span></div>'+rows.join("");
+    }
+  }
+  if(!html) html='<div class="empty">'+(edit?"No sizes match.":"No stock yet. Tap Edit to enter your counts.")+'</div>';
+  stockList.innerHTML=html;
+}
+editMode.addEventListener("change",renderStock);
+stockSearch.addEventListener("input",renderStock);
+stockList.addEventListener("click",e=>{
+  const b=e.target.closest("button[data-step]"); if(!b)return;
+  const code=b.dataset.step; S.stock[code]=(S.stock[code]||0)+(+b.dataset.d);
+  save(); renderStock(); updateStats();
+});
+stockList.addEventListener("change",e=>{
+  const i=e.target.closest("input[data-code]"); if(!i)return;
+  S.stock[i.dataset.code]=Math.round(+i.value||0); save(); renderStock(); updateStats();
+});
+document.getElementById("setBaselineBtn").addEventListener("click",()=>{
+  S.monthStart=todayStr(); save(); renderAll(); editMode.checked=false; renderStock();
+  toast("Month start set to today");
+});
+
+/* ---------- HISTORY view ---------- */
+const histList=document.getElementById("histList");
+const histSearch=document.getElementById("histSearch");
+function rowHistory(e){
+  const ded=e.deductions.map(d=>d.code.toUpperCase()+"×"+d.qty).join("  ");
+  return '<div class="hrow"><div class="hinfo"><div class="hname">'+esc(e.name)+'</div>'+
+    '<div class="hded">'+esc(ded)+'</div></div>'+
+    '<button class="hundo" data-undo="'+e.id+'">Undo</button></div>';
+}
+function renderHistory(){
+  const q=histSearch.value.trim().toLowerCase();
+  let items=S.log.slice().reverse();
+  if(q) items=items.filter(e=>(e.name+" "+e.deductions.map(d=>d.code).join(" ")).toLowerCase().includes(q));
+  if(!items.length){histList.innerHTML='<div class="empty">No entries.</div>';return;}
+  let html="",curDate=null;
+  for(const e of items){
+    if(e.date!==curDate){curDate=e.date;html+='<div class="datehdr">'+fmtDate(e.date)+'</div>';}
+    html+=rowHistory(e);
+  }
+  histList.innerHTML=html;
+}
+histSearch.addEventListener("input",renderHistory);
+function undo(id){
+  const i=S.log.findIndex(e=>e.id===id); if(i<0)return;
+  const e=S.log[i];
+  for(const d of e.deductions) S.stock[d.code]=(S.stock[d.code]||0)+d.qty;
+  S.log.splice(i,1); save(); renderAll(); toast("Reverted: "+e.name);
+}
+document.body.addEventListener("click",e=>{
+  const u=e.target.closest("[data-undo]"); if(u) undo(u.dataset.undo);
+});
+
+/* ---------- MONTH-END view ---------- */
+const monthList=document.getElementById("monthList");
+const monthShowAll=document.getElementById("monthShowAll");
+let counted={};
+function renderMonth(){
+  const all=monthShowAll.checked;
+  const codes=allCodes(S.showTex).filter(c=>all||(S.stock[c]||0)!==0);
+  if(!codes.length){monthList.innerHTML='<div class="empty">No stock to check.</div>';}
+  else{
+    monthList.innerHTML=codes.map(code=>{
+      const exp=S.stock[code]||0;
+      const cv=counted[code];
+      const has=cv!==undefined&&cv!=="";
+      const v=has?(+cv-exp):null;
+      const vcls=v===null?"":(v===0?"match":"off");
+      const vtxt=v===null?"—":(v>0?"+"+v:""+v);
+      return '<div class="mrow"><div class="code">'+code.toUpperCase()+'</div>'+
+        '<div class="exp">'+exp+'</div>'+
+        '<input type="number" data-m="'+code+'" value="'+(has?cv:"")+'" placeholder="–">'+
+        '<div class="var '+vcls+'">'+vtxt+'</div></div>';
+    }).join("");
+  }
+  renderArchive();
+}
+monthShowAll.addEventListener("change",renderMonth);
+monthList.addEventListener("input",e=>{
+  const i=e.target.closest("input[data-m]"); if(!i)return;
+  counted[i.dataset.m]=i.value; 
+  // light re-render of just variance: simplest is full re-render but keep focus
+  const code=i.dataset.m, exp=S.stock[code]||0;
+  const has=i.value!==""; const v=has?(+i.value-exp):null;
+  const vEl=i.nextElementSibling;
+  vEl.textContent=v===null?"—":(v>0?"+"+v:""+v);
+  vEl.className="var "+(v===null?"":(v===0?"match":"off"));
+});
+document.getElementById("commitMonthBtn").addEventListener("click",()=>{
+  const entered=Object.keys(counted).filter(c=>counted[c]!==""&&counted[c]!==undefined);
+  if(!entered.length){toast("Type at least one counted number first");return;}
+  if(!confirm("Commit counted stock as the new baseline and start a new month? Sizes you left blank keep their expected number.")) return;
+  const um=usedThisMonth();
+  const snapshot={start:S.monthStart,end:todayStr(),usedBoxes:um.boxes,patients:um.patients,variances:{}};
+  for(const c of entered){const exp=S.stock[c]||0;const cnt=Math.round(+counted[c]);snapshot.variances[c]=cnt-exp;S.stock[c]=cnt;}
+  S.archive.unshift(snapshot);
+  S.monthStart=todayStr();
+  counted={}; save(); renderAll(); toast("New month started");
+});
+function renderArchive(){
+  const card=document.getElementById("archiveCard");
+  if(!S.archive.length){card.style.display="none";return;}
+  card.style.display="";
+  document.getElementById("archiveList").innerHTML=S.archive.map(a=>{
+    const offs=Object.entries(a.variances).filter(([c,v])=>v!==0);
+    const offTxt=offs.length?offs.map(([c,v])=>c.toUpperCase()+" "+(v>0?"+"+v:v)).join("  "):"all matched";
+    return '<div class="hrow"><div class="hinfo"><div class="hname">'+fmtDate(a.start)+" → "+fmtDate(a.end)+'</div>'+
+      '<div class="hded">'+a.usedBoxes+' boxes · '+a.patients+' patients · '+esc(offTxt)+'</div></div></div>';
+  }).join("");
+}
+
+/* ---------- setup ---------- */
+const sheet=document.getElementById("setupSheet");
+document.getElementById("openSetup").addEventListener("click",()=>{
+  document.getElementById("threshInput").value=S.thresh;
+  document.getElementById("texToggle").checked=S.showTex;
+  sheet.classList.add("open");
+});
+sheet.addEventListener("click",e=>{if(e.target.hasAttribute("data-close"))sheet.classList.remove("open");});
+document.getElementById("threshInput").addEventListener("change",e=>{S.thresh=Math.max(0,Math.round(+e.target.value||0));save();renderStock();});
+document.getElementById("texToggle").addEventListener("change",e=>{S.showTex=e.target.checked;save();renderAll();});
+document.getElementById("exportBtn").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="implant-stock-"+todayStr()+".json";a.click();URL.revokeObjectURL(a.href);
+  toast("Backup downloaded");
+});
+document.getElementById("importBtn").addEventListener("click",()=>document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const o=JSON.parse(r.result);if(!confirm("Replace ALL current data with this backup?"))return;S=Object.assign(blank(),o);save();syncControls();renderAll();sheet.classList.remove("open");toast("Backup restored");}catch(err){toast("Invalid file");}};
+  r.readAsText(f); e.target.value="";
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Erase ALL data on this phone? Export a backup first if unsure."))return;
+  S=blank();save();syncControls();renderAll();sheet.classList.remove("open");toast("Data erased");
+});
+
+/* ---------- nav ---------- */
+document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  document.getElementById("view-"+b.dataset.view).classList.add("active");
+  if(b.dataset.view==="stock")renderStock();
+  if(b.dataset.view==="history")renderHistory();
+  if(b.dataset.view==="month"){counted={};renderMonth();}
+  window.scrollTo(0,0);
+}));
+
+/* ---------- render orchestration ---------- */
+function updateStats(){
+  document.getElementById("statStock").innerHTML=totalStock()+'<small> boxes</small>';
+  const um=usedThisMonth();
+  document.getElementById("statUsed").innerHTML=um.boxes+'<small> boxes</small>';
+  document.getElementById("statPat").textContent=um.patients;
+  document.getElementById("monthLabel").textContent="Month from "+fmtDate(S.monthStart);
+}
+function renderAll(){updateStats();renderStock();renderHistory();renderToday();renderMonth();}
+function syncControls(){
+  document.getElementById("threshInput").value=S.thresh;
+  document.getElementById("texToggle").checked=S.showTex;
+}
+
+/* init */
+logDate.value=todayStr();
+logDate.addEventListener("change",renderToday);
+renderPreview();
+syncControls();
+renderAll();
+</script>
+</body>
+</html>
