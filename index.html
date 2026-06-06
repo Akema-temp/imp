@@ -13,86 +13,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#eef0f1;
-    --paper:#ffffff;
-    --ink:#16211f;
-    --muted:#6b7578;
-    --line:#e0e4e5;
-    --line-strong:#c9cfd0;
-    --accent:#0b6f62;
-    --accent-soft:#e3f1ee;
-    --warn:#b5790f;
-    --warn-soft:#fbf1dc;
-    --danger:#b53a35;
-    --danger-soft:#fbe6e4;
-    --ok:#0b6f62;
+    --bg:#eef0f1;--paper:#ffffff;--ink:#16211f;--muted:#6b7578;--line:#e0e4e5;--line-strong:#c9cfd0;
+    --accent:#0b6f62;--accent-soft:#e3f1ee;--warn:#b5790f;--warn-soft:#fbf1dc;--danger:#b53a35;--danger-soft:#fbe6e4;--ok:#0b6f62;
     --sans:'Archivo',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-    --r:14px;
-    --shadow:0 1px 2px rgba(20,33,31,.06),0 4px 16px rgba(20,33,31,.05);
+    --r:14px;--shadow:0 1px 2px rgba(20,33,31,.06),0 4px 16px rgba(20,33,31,.05);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
-  body{
-    font-family:var(--sans);
-    color:var(--ink);
-    background:
-      linear-gradient(var(--bg),var(--bg)),
+  body{font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(var(--bg),var(--bg)),
       repeating-linear-gradient(0deg,transparent 0 23px,rgba(11,111,98,.035) 23px 24px),
       repeating-linear-gradient(90deg,transparent 0 23px,rgba(11,111,98,.035) 23px 24px);
-    background-attachment:fixed;
-    -webkit-font-smoothing:antialiased;
-    line-height:1.4;
-  }
+    background-attachment:fixed;-webkit-font-smoothing:antialiased;line-height:1.4;}
   .app{max-width:540px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;
     background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0) 240px);}
-  /* header */
-  header{position:sticky;top:0;z-index:20;background:var(--paper);
-    border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 16px 0;}
+  header{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 16px 0;}
   .hbar{display:flex;align-items:center;gap:10px;padding:13px 0 12px;}
-  .logo{width:30px;height:30px;border-radius:8px;background:var(--accent);position:relative;flex:0 0 auto;
-    box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);}
+  .logo{width:30px;height:30px;border-radius:8px;background:var(--accent);position:relative;flex:0 0 auto;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);}
   .logo:before{content:"";position:absolute;inset:8px;border-radius:50%;background:#fff;opacity:.92}
   .logo:after{content:"";position:absolute;left:13px;top:9px;width:4px;height:12px;border-radius:2px;background:var(--accent)}
   h1{font-size:16px;font-weight:800;letter-spacing:.02em;margin:0;flex:1}
   h1 small{display:block;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-  .gear{appearance:none;border:1px solid var(--line);background:var(--paper);width:38px;height:38px;border-radius:10px;
-    display:grid;place-items:center;cursor:pointer;color:var(--ink);font-size:17px}
+  .gear{appearance:none;border:1px solid var(--line);background:var(--paper);width:38px;height:38px;border-radius:10px;display:grid;place-items:center;cursor:pointer;color:var(--ink);font-size:17px}
   .gear:active{background:var(--bg)}
-  /* stat strip */
   .stats{display:flex;gap:8px;padding:0 0 13px}
   .stat{flex:1;border:1px solid var(--line);border-radius:11px;padding:9px 10px;background:linear-gradient(180deg,#fff,#fbfcfc)}
   .stat .k{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
   .stat .v{font-family:var(--mono);font-size:19px;font-weight:700;margin-top:2px}
   .stat .v small{font-size:11px;color:var(--muted);font-weight:500}
-  /* content */
   main{flex:1;padding:16px 16px 96px}
   .view{display:none;animation:fade .25s ease}
   .view.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
-    padding:15px;margin-bottom:14px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:15px;margin-bottom:14px}
   .card h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 11px;font-weight:700}
   .label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;display:block;margin:0 0 6px}
-  textarea,input[type=text],input[type=date],input[type=number]{
-    width:100%;font-family:var(--mono);font-size:15px;color:var(--ink);background:#fbfcfc;
-    border:1px solid var(--line-strong);border-radius:10px;padding:11px 12px;outline:none;}
+  textarea,input[type=text],input[type=date],input[type=number]{width:100%;font-family:var(--mono);font-size:15px;color:var(--ink);background:#fbfcfc;border:1px solid var(--line-strong);border-radius:10px;padding:11px 12px;outline:none;}
   textarea{min-height:128px;resize:vertical;line-height:1.6}
+  #eDayText{min-height:200px}
   input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-  .row{display:flex;gap:10px;align-items:center}
-  .row>*{min-width:0}
+  .row{display:flex;gap:10px;align-items:center}.row>*{min-width:0}
   .hint{font-size:11.5px;color:var(--muted);margin:8px 0 0;font-family:var(--mono)}
   .hint b{color:var(--accent)}
-  /* buttons */
-  .btn{appearance:none;border:none;border-radius:11px;font-family:var(--sans);font-weight:700;font-size:14px;
-    padding:13px 16px;cursor:pointer;letter-spacing:.02em;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+  .savedtag{font-size:11px;color:var(--accent);font-weight:700;display:flex;align-items:center;gap:5px;margin:10px 0 0}
+  .savedtag .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .btn{appearance:none;border:none;border-radius:11px;font-family:var(--sans);font-weight:700;font-size:14px;padding:13px 16px;cursor:pointer;letter-spacing:.02em;display:inline-flex;align-items:center;justify-content:center;gap:7px}
   .btn:active{transform:translateY(1px)}
   .btn-primary{background:var(--accent);color:#fff;width:100%}
   .btn-primary:disabled{background:var(--line-strong);color:#fff;cursor:default;transform:none}
   .btn-ghost{background:var(--paper);border:1px solid var(--line-strong);color:var(--ink)}
-  .btn-sm{padding:7px 11px;font-size:12.5px;border-radius:9px}
   .btn-danger{background:var(--danger);color:#fff}
-  /* preview */
   .preview{margin-top:13px}
   .pline{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:8px;background:#fbfcfc}
   .pline.bad{border-color:var(--danger);background:var(--danger-soft)}
@@ -101,82 +72,63 @@
   .pline .pboxes{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
   .pline .pded{font-family:var(--mono);font-size:13px;color:var(--accent);margin-top:5px;font-weight:500}
   .pline .pmsg{font-size:11.5px;margin-top:5px;font-weight:600}
-  .pline.bad .pmsg{color:var(--danger)}
-  .pline.warn .pmsg{color:var(--warn)}
-  .chip{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--accent-soft);color:var(--accent);
-    padding:2px 7px;border-radius:6px;margin:0 4px 2px 0}
+  .pline.bad .pmsg{color:var(--danger)}.pline.warn .pmsg{color:var(--warn)}
+  .chip{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--accent-soft);color:var(--accent);padding:2px 7px;border-radius:6px;margin:0 4px 2px 0}
+  .psummary{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-weight:700;padding:4px 2px 2px;border-top:1px dashed var(--line);margin-top:4px}
+  .psummary b{color:var(--accent)}
   .empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 8px;font-family:var(--mono)}
-  /* stock list */
   .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
   .search{flex:1}
-  .toggle{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);
-    text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;white-space:nowrap}
+  .toggle{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;white-space:nowrap}
   .toggle input{appearance:none;width:34px;height:20px;border-radius:11px;background:var(--line-strong);position:relative;transition:.2s;cursor:pointer}
   .toggle input:checked{background:var(--accent)}
   .toggle input:before{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
   .toggle input:checked:before{left:16px}
-  .brandhdr{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:800;
-    margin:16px 4px 7px;display:flex;justify-content:space-between}
+  .daycard{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin-bottom:10px;cursor:pointer;overflow:hidden;box-shadow:var(--shadow)}
+  .daycard:active{background:var(--bg)}
+  .dchead{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;border-bottom:1px solid var(--line);background:#fbfcfc}
+  .dchead .ddate{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+  .dchead .dcount{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:700}
+  .dline{display:block;padding:7px 13px;border-bottom:1px solid var(--line);font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+  .dline:last-child{border-bottom:none}
+  .dline.note{color:var(--muted)}
+  .brandhdr{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:800;margin:16px 4px 7px;display:flex;justify-content:space-between}
   .brandhdr span{color:var(--muted);font-family:var(--mono)}
-  .srow{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;
-    margin-bottom:6px;background:var(--paper)}
-  .srow .code{font-family:var(--mono);font-weight:700;font-size:13px;width:74px}
+  .srow{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--paper)}
+  .srow .code{font-family:var(--mono);font-weight:700;font-size:13px;width:84px}
   .srow .desc{flex:1;font-size:12px;color:var(--muted)}
   .srow .qty{font-family:var(--mono);font-weight:700;font-size:17px;min-width:34px;text-align:right}
-  .srow.low .qty{color:var(--warn)}
-  .srow.zero{opacity:.55}
-  .srow.neg{border-color:var(--danger);background:var(--danger-soft)}
-  .srow.neg .qty{color:var(--danger)}
+  .srow.low .qty{color:var(--warn)}.srow.zero{opacity:.55}
+  .srow.neg{border-color:var(--danger);background:var(--danger-soft)}.srow.neg .qty{color:var(--danger)}
   .srow input[type=number]{width:62px;padding:7px 8px;text-align:center;font-size:14px}
   .stepper{display:flex;align-items:center;gap:0}
-  .stepper button{width:30px;height:30px;border:1px solid var(--line-strong);background:#fbfcfc;font-size:17px;
-    font-weight:700;color:var(--ink);cursor:pointer;display:grid;place-items:center}
-  .stepper button:first-child{border-radius:8px 0 0 8px}
-  .stepper button:last-child{border-radius:0 8px 8px 0}
+  .stepper button{width:30px;height:30px;border:1px solid var(--line-strong);background:#fbfcfc;font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;display:grid;place-items:center}
+  .stepper button:first-child{border-radius:8px 0 0 8px}.stepper button:last-child{border-radius:0 8px 8px 0}
   .stepper input{width:48px;border-radius:0;border-left:none;border-right:none;text-align:center;padding:6px 0}
-  /* history */
-  .datehdr{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:16px 2px 8px}
-  .hrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--paper)}
-  .hrow .hinfo{flex:1;min-width:0}
-  .hrow .hname{font-weight:700;font-size:13.5px}
-  .hrow .hded{font-family:var(--mono);font-size:12px;color:var(--accent);margin-top:2px}
-  .hrow .hundo{border:1px solid var(--line-strong);background:var(--paper);color:var(--danger);font-weight:700;
-    font-size:11px;padding:6px 10px;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
-  /* month-end */
+  .hrow{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--paper)}
+  .hrow .hinfo{flex:1;min-width:0}.hrow .hname{font-weight:700;font-size:13.5px}.hrow .hded{font-family:var(--mono);font-size:12px;color:var(--accent);margin-top:2px}
   .mrow{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--paper)}
-  .mrow .code{font-family:var(--mono);font-weight:700;font-size:12.5px;width:66px}
-  .mrow .exp{font-family:var(--mono);font-size:13px;color:var(--muted);width:58px;text-align:center}
-  .mrow input{width:58px;text-align:center;padding:7px 4px;font-size:14px}
-  .mrow .var{font-family:var(--mono);font-weight:700;font-size:13px;width:54px;text-align:right}
-  .mrow .var.off{color:var(--danger)}
-  .mrow .var.match{color:var(--ok)}
+  .mrow .code{font-family:var(--mono);font-weight:700;font-size:12.5px;width:76px}
+  .mrow .exp{font-family:var(--mono);font-size:13px;color:var(--muted);width:52px;text-align:center}
+  .mrow input{width:56px;text-align:center;padding:7px 4px;font-size:14px}
+  .mrow .var{font-family:var(--mono);font-weight:700;font-size:13px;width:48px;text-align:right}
+  .mrow .var.off{color:var(--danger)}.mrow .var.match{color:var(--ok)}
   .mhead{display:flex;gap:8px;padding:0 10px 6px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
-  .mhead .code{width:66px}.mhead .exp{width:58px;text-align:center}.mhead .inp{width:58px;text-align:center}.mhead .var{width:54px;text-align:right}
-  /* sheet / modal */
-  .sheet{position:fixed;inset:0;z-index:50;display:none}
-  .sheet.open{display:block}
+  .mhead .code{width:76px}.mhead .exp{width:52px;text-align:center}.mhead .inp{width:56px;text-align:center}.mhead .var{width:48px;text-align:right}
+  .sheet{position:fixed;inset:0;z-index:50;display:none}.sheet.open{display:block}
   .sheet .backdrop{position:absolute;inset:0;background:rgba(15,25,24,.4)}
-  .sheet .panel{position:absolute;left:0;right:0;bottom:0;max-width:540px;margin:0 auto;background:var(--bg);
-    border-radius:20px 20px 0 0;padding:8px 16px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;
-    animation:slideup .3s cubic-bezier(.2,.8,.2,1)}
+  .sheet .panel{position:absolute;left:0;right:0;bottom:0;max-width:540px;margin:0 auto;background:var(--bg);border-radius:20px 20px 0 0;padding:8px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto;animation:slideup .3s cubic-bezier(.2,.8,.2,1)}
   @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
   .grab{width:40px;height:4px;border-radius:2px;background:var(--line-strong);margin:8px auto 14px}
   .sheet h2{font-size:14px;font-weight:800;margin:0 0 12px}
-  .minirow{display:flex;gap:8px;margin-bottom:8px}
-  .minirow .btn{flex:1}
-  /* bottom nav */
-  nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--paper);border-top:1px solid var(--line);
-    padding-bottom:env(safe-area-inset-bottom)}
+  .minirow{display:flex;gap:8px;margin-bottom:8px}.minirow .btn{flex:1}
+  nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--paper);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
   .navinner{max-width:540px;margin:0 auto;display:flex}
-  .nav-btn{flex:1;appearance:none;border:none;background:none;padding:9px 4px 8px;cursor:pointer;
-    display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-family:var(--sans)}
+  .nav-btn{flex:1;appearance:none;border:none;background:none;padding:9px 4px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-family:var(--sans)}
   .nav-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .nav-btn span{font-size:10px;font-weight:700;letter-spacing:.02em}
   .nav-btn.active{color:var(--accent)}
-  .nav-btn .badge{position:absolute;transform:translate(13px,-4px);background:var(--accent);color:#fff;
-    font-family:var(--mono);font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;padding:0 3px;display:grid;place-items:center}
-  .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
-    padding:11px 18px;border-radius:11px;font-size:13px;font-weight:600;z-index:60;opacity:0;transition:.3s;pointer-events:none;max-width:90%}
+  .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:11px;font-size:13px;font-weight:600;z-index:60;opacity:0;transition:.3s;pointer-events:none;max-width:90%}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .divider{height:1px;background:var(--line);margin:14px 0}
   .warnbox{background:var(--warn-soft);border:1px solid var(--warn);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--warn);font-weight:600;margin-top:10px}
@@ -202,19 +154,29 @@
     <!-- LOG -->
     <section class="view active" id="view-log">
       <div class="card">
-        <h2>Log usage</h2>
+        <h2>Quick add</h2>
         <div class="row" style="margin-bottom:12px">
           <div style="flex:1"><span class="label">Date</span><input type="date" id="logDate"></div>
         </div>
-        <span class="label">One patient per line — name + code</span>
-        <textarea id="logInput" placeholder="Mr. Sun  mv400&#10;Mrs. Maria  mts350/375&#10;Ms. Lee  eu375"></textarea>
-        <p class="hint">A plain code = 1 pair (<b>2 boxes</b>). A slash = 1 box each, e.g. <b>mts350/375</b>.</p>
+        <span class="label">One patient per line — adds to the day's list</span>
+        <textarea id="logInput" placeholder="ใหม่ยา ผ่าเสา  mv400  34000  rep:somchai&#10;เจียว เนียวไง  mt350s" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+        <p class="hint">Code = pair (<b>2 boxes</b>); slash = 1 box each (<b>mt350s/375s</b>). Prices &amp; notes are kept, ignored by stock.</p>
         <div class="preview" id="logPreview"></div>
-        <button class="btn btn-primary" id="applyBtn" style="margin-top:6px" disabled>Apply to stock</button>
+        <button class="btn btn-primary" id="applyBtn" style="margin-top:6px" disabled>Add to this day</button>
       </div>
       <div class="card" id="todayCard" style="display:none">
-        <h2>Logged on <span id="todayDateLabel"></span></h2>
+        <h2 id="todayHead">Today's list — tap to edit</h2>
         <div id="todayList"></div>
+      </div>
+    </section>
+
+    <!-- ENTRIES -->
+    <section class="view" id="view-entries">
+      <div class="card">
+        <h2>Entries — one list per day</h2>
+        <button class="btn btn-primary" id="addEntryBtn" style="margin-bottom:12px">+ Add / edit a day</button>
+        <div class="toolbar"><input type="text" class="search" id="histSearch" placeholder="Filter name / code / note…"></div>
+        <div id="histList"></div>
       </div>
     </section>
 
@@ -229,17 +191,8 @@
         <div id="stockList"></div>
         <div id="stockEditActions" style="display:none;margin-top:12px">
           <button class="btn btn-primary" id="setBaselineBtn">Set as month start (today)</button>
-          <p class="small">This saves the current counts as your starting baseline and begins a new month for the "used this month" tally. Do this right after your physical count.</p>
+          <p class="small">Saves current counts as the starting baseline and begins a new month for the "used this month" tally. Do this right after your physical count.</p>
         </div>
-      </div>
-    </section>
-
-    <!-- HISTORY -->
-    <section class="view" id="view-history">
-      <div class="card">
-        <h2>Usage history</h2>
-        <div class="toolbar"><input type="text" class="search" id="histSearch" placeholder="Filter name / code…"></div>
-        <div id="histList"></div>
       </div>
     </section>
 
@@ -247,7 +200,7 @@
     <section class="view" id="view-month">
       <div class="card">
         <h2>Month-end check</h2>
-        <p class="small" style="margin-top:0">Count your physical stock and type each number. Variance = your count − expected. When it all matches, commit it as next month's baseline.</p>
+        <p class="small" style="margin-top:0">Count physical stock and type each number. Variance = your count − expected. When it matches, commit it as next month's baseline.</p>
         <label class="toggle" style="margin:6px 0 12px">Show all sizes<input type="checkbox" id="monthShowAll"></label>
         <div class="mhead"><span class="code">Code</span><span class="exp">Expect</span><span class="inp">Counted</span><span class="var">Var</span></div>
         <div id="monthList"></div>
@@ -256,20 +209,37 @@
         <p class="small">Sets stock to your counted numbers, archives this month, and resets the baseline to today.</p>
       </div>
       <div class="card" id="archiveCard" style="display:none">
-        <h2>Past months</h2>
-        <div id="archiveList"></div>
+        <h2>Past months</h2><div id="archiveList"></div>
       </div>
     </section>
   </main>
 
-  <nav>
-    <div class="navinner">
-      <button class="nav-btn active" data-view="log"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Log</span></button>
-      <button class="nav-btn" data-view="stock"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Stock</span></button>
-      <button class="nav-btn" data-view="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg><span>History</span></button>
-      <button class="nav-btn" data-view="month"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 14l2 2 4-4"/></svg><span>Month-end</span></button>
+  <nav><div class="navinner">
+    <button class="nav-btn active" data-view="log"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button>
+    <button class="nav-btn" data-view="entries"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Entries</span></button>
+    <button class="nav-btn" data-view="stock"><svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg><span>Stock</span></button>
+    <button class="nav-btn" data-view="month"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 14l2 2 4-4"/></svg><span>Month-end</span></button>
+  </div></nav>
+</div>
+
+<!-- DAY EDITOR SHEET (auto-saves) -->
+<div class="sheet" id="entrySheet">
+  <div class="backdrop" data-close-entry></div>
+  <div class="panel">
+    <div class="grab"></div>
+    <h2 id="entryTitle">Day</h2>
+    <div class="card">
+      <span class="label">Date</span>
+      <input type="date" id="eDate">
+      <span class="label" style="margin-top:12px">The day's list — type freely</span>
+      <textarea id="eDayText" placeholder="ใหม่ยา ผ่าเสา  mv400  34000  rep: somchai&#10;เจียว เนียวไง  mt350s  43000&#10;(any extra notes here are saved too)" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      <div class="savedtag"><span class="dot"></span><span>Saved automatically as you type</span></div>
+      <p class="hint">Only implant codes change stock. Prices, rep names &amp; notes are kept as-is. Start a line with <b>#</b> to keep it a note (even if it mentions a size).</p>
+      <div class="preview" id="ePreview"></div>
     </div>
-  </nav>
+    <button class="btn btn-primary" id="eDone">Done</button>
+    <button class="btn btn-danger" id="eDelete" style="width:100%;margin-top:8px;display:none">Delete this day</button>
+  </div>
 </div>
 
 <!-- SETUP SHEET -->
@@ -280,17 +250,12 @@
     <h2>Setup &amp; backup</h2>
     <div class="card">
       <h2>Low-stock warning</h2>
-      <div class="row">
-        <span style="font-size:13px;flex:1">Highlight when boxes ≤</span>
-        <input type="number" id="threshInput" min="0" style="width:80px;text-align:center">
-      </div>
+      <div class="row"><span style="font-size:13px;flex:1">Highlight when boxes ≤</span><input type="number" id="threshInput" min="0" style="width:80px;text-align:center"></div>
     </div>
     <div class="card">
       <h2>Textured (Mentor)</h2>
-      <label class="toggle" style="text-transform:none;font-size:13px;color:var(--ink)">
-        Show textured line (mtt) in stock<input type="checkbox" id="texToggle">
-      </label>
-      <p class="small">Off by default. Turn on only if textured ever comes back to the clinic.</p>
+      <label class="toggle" style="text-transform:none;font-size:13px;color:var(--ink)">Show textured codes (mt…t)<input type="checkbox" id="texToggle"></label>
+      <p class="small">Off by default. Smooth is <b>mt350s</b>; textured would be <b>mt350t</b>. Turn this on only if textured returns.</p>
     </div>
     <div class="card">
       <h2>Backup</h2>
@@ -299,7 +264,7 @@
         <button class="btn btn-ghost" id="importBtn">⬆ Import file</button>
       </div>
       <input type="file" id="importFile" accept="application/json,.json" style="display:none">
-      <p class="small">Data lives only on this phone. Export now and then so a lost/changed phone doesn't lose your stock.</p>
+      <p class="small">Data lives only on this device. Export now and then so a lost/changed phone doesn't lose your stock.</p>
     </div>
     <div class="card">
       <h2>Reset</h2>
@@ -315,262 +280,232 @@
 "use strict";
 
 /* ---------- catalog ---------- */
-const CATALOG = {
-  mv:  { brand:"Motiva",  surface:"",         sizes:[305,335,355,375,400,450,500] },
-  eu:  { brand:"Euro",    surface:"",         sizes:[280,300,325,350,375,400,450,500,550,600,650,700] },
-  mts: { brand:"Mentor",  surface:"smooth",   sizes:[275,300,325,350,375,400,450,500,550,600,650,700] },
-  sm:  { brand:"Silimed", surface:"",         sizes:[335,365,390,420,445] },
-  mtt: { brand:"Mentor",  surface:"textured", sizes:[275,300,325,350,375,400,450,500,550,600,650,700], optional:true },
+const BRANDS = {
+  mv:{brand:"Motiva", sizes:[305,335,355,375,400,450,500]},
+  eu:{brand:"Euro",   sizes:[280,300,325,350,375,400,450,500,550,600,650,700]},
+  sm:{brand:"Silimed",sizes:[335,365,390,420,445]},
+  mt:{brand:"Mentor", sizes:[275,300,325,350,375,400,450,500,550,600,650,700]},
 };
-const PREFIXES = Object.keys(CATALOG);
-const CODE_RE = new RegExp('('+PREFIXES.join('|')+')\\s*\\d{2,3}(?:\\s*\\/\\s*(?:(?:'+PREFIXES.join('|')+')\\s*)?\\d{2,3})*','i');
-const SEG_RE  = new RegExp('^('+PREFIXES.join('|')+')?(\\d{2,3})$');
+const SIZES={Motiva:BRANDS.mv.sizes,Euro:BRANDS.eu.sizes,Silimed:BRANDS.sm.sizes,Mentor:BRANDS.mt.sizes};
+const CODE_RE=/(?:mv|eu|sm|mt)\s*\d{2,3}[st]?(?:\s*\/\s*(?:(?:mv|eu|sm|mt)\s*)?\d{2,3}[st]?)*/i;
 
-function allCodes(includeTex){
-  const out=[];
-  for(const p of PREFIXES){
-    if(CATALOG[p].optional && !includeTex) continue;
-    for(const s of CATALOG[p].sizes) out.push(p+s);
-  }
-  return out;
-}
-function splitCode(code){const m=code.match(new RegExp('^('+PREFIXES.join('|')+')(\\d{2,3})$'));return m?{prefix:m[1],size:+m[2]}:null;}
-function codeLabel(code){const c=splitCode(code);if(!c)return code;const cat=CATALOG[c.prefix];return cat.brand+" "+c.size+(cat.surface?" "+cat.surface:"")+" cc";}
+function codeInfo(code){let m;
+  if(m=code.match(/^mt(\d{2,3})([st])$/))return{brand:"Mentor",size:+m[1],surface:m[2]==="s"?"smooth":"textured"};
+  if(m=code.match(/^(mv|eu|sm)(\d{2,3})$/))return{brand:{mv:"Motiva",eu:"Euro",sm:"Silimed"}[m[1]],size:+m[2],surface:""};
+  return null;}
+function groups(includeTex){
+  const g=[
+    {label:"Motiva", surface:"", codes:BRANDS.mv.sizes.map(s=>"mv"+s)},
+    {label:"Euro",   surface:"", codes:BRANDS.eu.sizes.map(s=>"eu"+s)},
+    {label:"Mentor", surface:"smooth", codes:BRANDS.mt.sizes.map(s=>"mt"+s+"s")},
+    {label:"Silimed",surface:"", codes:BRANDS.sm.sizes.map(s=>"sm"+s)},
+  ];
+  if(includeTex) g.push({label:"Mentor",surface:"textured",codes:BRANDS.mt.sizes.map(s=>"mt"+s+"t")});
+  return g;}
+function allCodes(includeTex){return groups(includeTex).flatMap(g=>g.codes);}
 
 /* ---------- state ---------- */
-const KEY="implantStock.v1";
-let S=load();
-function blank(){return {stock:{},monthStart:todayStr(),log:[],archive:[],thresh:2,showTex:false};}
-function load(){
-  try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);return Object.assign(blank(),o);}}catch(e){}
-  return blank();
-}
+const KEY="implantStock.v2";
+let S=load();migrate();
+function blank(){return {stock:{},monthStart:todayStr(),days:{},archive:[],thresh:2,showTex:false};}
+function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r));}catch(e){}return blank();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast("Could not save — storage blocked");}}
+function migrate(){ // old per-entry log -> per-day text (stock already applied, do not re-apply)
+  if(S.log&&S.log.length&&(!S.days||Object.keys(S.days).length===0)){
+    S.days=S.days||{}; const byDate={};
+    for(const e of S.log){(byDate[e.date]=byDate[e.date]||[]).push(e);}
+    for(const date in byDate){
+      const text=byDate[date].map(lineText).join("\n");
+      const pd=parseDay(text);
+      S.days[date]={text,deductions:pd.deductions,boxes:pd.boxes,patients:pd.patients};
+    }
+    delete S.log; save();
+  }
+}
 
 /* ---------- helpers ---------- */
 function todayStr(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function fmtDate(s){if(!s)return"";const[y,m,d]=s.split("-");return d+" "+["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m-1]+" "+y;}
 function totalStock(){let t=0;for(const k in S.stock)t+=S.stock[k];return t;}
-function usedThisMonth(){let b=0,p=0;for(const e of S.log){if(e.date>=S.monthStart){p++;b+=e.boxes;}}return{boxes:b,patients:p};}
-function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2200);}
+function usedThisMonth(){let b=0,p=0;for(const d in S.days){if(d>=S.monthStart){b+=S.days[d].boxes;p+=S.days[d].patients;}}return{boxes:b,patients:p};}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2000);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
 /* ---------- parser ---------- */
-function parseLine(raw){
-  const line=raw.trim();
-  if(!line) return null;
-  const m=line.match(CODE_RE);
-  if(!m) return {raw:line,name:line,deductions:[],errors:["No implant code found"],boxes:0,valid:false};
-  let name=line.slice(0,m.index).replace(/[-=:,\s]+$/,"").trim();
-  if(!name) name="(no name)";
-  const spec=m[0].toLowerCase().replace(/\s+/g,"");
-  const segs=spec.split("/");
-  const isPair=segs.length===1;
-  let cur=null; const map={}; const errors=[];
+function parseSpecCore(specText){
+  const spec=specText.toLowerCase().replace(/\s+/g,"");
+  if(!spec) return {deductions:[],errors:["empty"],boxes:0,valid:false};
+  const segs=spec.split("/"); const isPair=segs.length===1;
+  let curBrand=null,curSurf="s"; const map={}; const errors=[];
   for(const seg of segs){
-    const mm=seg.match(SEG_RE);
-    if(!mm){errors.push("Bad part: "+seg);continue;}
-    const pfx=mm[1]||cur; const size=+mm[2];
-    if(!pfx){errors.push("No brand for "+size);continue;}
-    cur=pfx;
-    const code=pfx+size; const qty=isPair?2:1;
-    map[code]=(map[code]||0)+qty;
+    const mm=seg.match(/^(mv|eu|sm|mt)?(\d{2,3})([st])?$/);
+    if(!mm){errors.push("bad part: "+seg);continue;}
+    const brand=mm[1]||curBrand; const size=+mm[2]; const suf=mm[3];
+    if(!brand){errors.push("no brand for "+size);continue;}
+    curBrand=brand; let code;
+    if(brand==="mt"){if(suf)curSurf=suf;code="mt"+size+(suf||curSurf||"s");}
+    else{if(suf)errors.push(brand+size+': "'+suf+'" not valid here');code=brand+size;}
+    map[code]=(map[code]||0)+(isPair?2:1);
   }
   const deductions=Object.entries(map).map(([code,qty])=>{
-    const c=splitCode(code); const cat=c&&CATALOG[c.prefix];
-    let warn=null;
-    if(!cat) warn="unknown brand";
-    else if(!cat.sizes.includes(c.size)) warn=c.size+" not a "+cat.brand+" size";
-    if(warn) errors.push(code+": "+warn);
-    return {code,qty,warn};
+    const info=codeInfo(code);let warn=null;
+    if(!info)warn="unknown code";else if(!SIZES[info.brand].includes(info.size))warn=info.size+" not a "+info.brand+" size";
+    if(warn)errors.push(code.toUpperCase()+": "+warn);
+    return{code,qty,warn};
   });
   const boxes=deductions.reduce((s,d)=>s+d.qty,0);
-  const hard=deductions.some(d=>d.warn)||deductions.length===0;
-  return {raw:line,name,deductions,errors,boxes,valid:!hard};
+  return{deductions,errors,boxes,valid:errors.length===0&&deductions.length>0};
 }
-function parseInput(text){return text.split(/\n+/).map(parseLine).filter(Boolean);}
-
-/* ---------- LOG view ---------- */
-const logInput=document.getElementById("logInput");
-const logPreview=document.getElementById("logPreview");
-const applyBtn=document.getElementById("applyBtn");
-const logDate=document.getElementById("logDate");
-
-function renderPreview(){
-  const lines=parseInput(logInput.value);
-  if(!lines.length){logPreview.innerHTML="";applyBtn.disabled=true;return;}
-  let anyValid=false;
-  logPreview.innerHTML=lines.map(l=>{
-    let cls="pline",msg="";
-    if(!l.valid){cls+=" bad";msg=l.errors.join(" · ");}
-    else{anyValid=true;if(l.boxes!==2){cls+=" warn";msg="⚠ "+l.boxes+" boxes on this line (usually 2). Check it.";}}
-    const ded=l.deductions.map(d=>'<span class="chip">'+esc(d.code.toUpperCase())+" ×"+d.qty+"</span>").join("");
-    return '<div class="'+cls+'"><div class="pname">'+esc(l.name)+
-      '<span class="pboxes">'+l.boxes+' box'+(l.boxes===1?"":"es")+'</span></div>'+
-      (ded?'<div class="pded">'+ded+'</div>':"")+
-      (msg?'<div class="pmsg">'+esc(msg)+'</div>':"")+'</div>';
-  }).join("");
-  applyBtn.disabled=!anyValid;
+function parseLine(line){
+  const m=line.match(CODE_RE);
+  if(!m)return{name:line,deductions:[],errors:["No implant code found"],boxes:0,valid:false,noCode:true};
+  let name=line.slice(0,m.index).replace(/[-=:,\s]+$/,"").trim()||"(no name)";
+  return Object.assign({name,code:m[0].toLowerCase().replace(/\s+/g,"")},parseSpecCore(m[0]));
 }
-logInput.addEventListener("input",renderPreview);
-
-applyBtn.addEventListener("click",()=>{
-  const lines=parseInput(logInput.value);
-  const date=logDate.value||todayStr();
-  let applied=0; const leftover=[];
-  for(const l of lines){
-    if(!l.valid){leftover.push(l.raw);continue;}
-    S.log.push({id:Date.now()+"_"+Math.random().toString(36).slice(2,7),date,name:l.name,raw:l.raw,
-      deductions:l.deductions.map(d=>({code:d.code,qty:d.qty})),boxes:l.boxes});
-    for(const d of l.deductions) S.stock[d.code]=(S.stock[d.code]||0)-d.qty;
-    applied++;
+/* a whole day's text -> merged deductions + per-line view (notes preserved) */
+function parseDay(text){
+  const map={};let patients=0,notes=0;const view=[];
+  for(const raw of String(text).split(/\r?\n/)){
+    const line=raw.trim(); if(!line)continue;
+    if(/^(#|\/\/)/.test(line)){notes++;view.push({type:"note",text:line});continue;}
+    const p=parseLine(line);
+    if(p.noCode){notes++;view.push({type:"note",text:line});continue;}
+    if(p.valid){for(const d of p.deductions)map[d.code]=(map[d.code]||0)+d.qty;patients++;view.push({type:"code",name:p.name,p});}
+    else view.push({type:"bad",name:p.name,p});
   }
+  const deductions=Object.entries(map).map(([code,qty])=>({code,qty}));
+  return{deductions,boxes:deductions.reduce((s,d)=>s+d.qty,0),patients,notes,view};
+}
+function lineText(e){const code=e.code||e.deductions.flatMap(d=>Array(d.qty).fill(d.code)).join("/");return(e.name&&e.name!=="(no name)")?(e.name+" "+code):code;}
+
+/* ---------- stock ---------- */
+function applyDeductions(deds,sign){for(const d of deds)S.stock[d.code]=(S.stock[d.code]||0)+sign*d.qty;}
+function setDay(date,text){
+  const old=S.days[date]; if(old)applyDeductions(old.deductions,+1);
+  const pd=parseDay(text); applyDeductions(pd.deductions,-1);
+  if(!text.trim())delete S.days[date];
+  else S.days[date]={text,deductions:pd.deductions,boxes:pd.boxes,patients:pd.patients};
   save();
-  logInput.value=leftover.join("\n");
-  renderPreview(); renderAll();
-  if(leftover.length) toast(applied+" applied · "+leftover.length+" need fixing");
-  else toast(applied+" patient"+(applied===1?"":"s")+" logged");
+}
+
+/* ---------- shared render ---------- */
+function plinePreview(name,p){
+  let cls="pline",msg="";
+  if(!p.valid){cls+=" bad";msg=p.errors.join(" · ");}
+  else if(p.boxes!==2){cls+=" warn";msg="⚠ "+p.boxes+" boxes on this line (usually 2). Check it.";}
+  const ded=p.deductions.map(d=>'<span class="chip">'+esc(d.code.toUpperCase())+" ×"+d.qty+"</span>").join("");
+  return '<div class="'+cls+'"><div class="pname">'+esc(name)+'<span class="pboxes">'+p.boxes+' box'+(p.boxes===1?"":"es")+'</span></div>'+(ded?'<div class="pded">'+ded+'</div>':"")+(msg?'<div class="pmsg">'+esc(msg)+'</div>':"")+'</div>';
+}
+function previewHTML(text){
+  const pd=parseDay(text);
+  let html=pd.view.filter(v=>v.type!=="note").map(v=>plinePreview(v.name,v.p)).join("");
+  if(pd.boxes||pd.patients||pd.notes)
+    html+='<div class="psummary"><b>'+pd.boxes+'</b> boxes · <b>'+pd.patients+'</b> patients'+(pd.notes?' · '+pd.notes+' note line'+(pd.notes===1?"":"s")+' saved':"")+'</div>';
+  return html;
+}
+function dayCard(date,day,showHeader){
+  const body=String(day.text).split(/\r?\n/).filter(l=>l.trim()!=="").map(l=>{const note=/^\s*(#|\/\/)/.test(l)||!CODE_RE.test(l);return '<div class="dline'+(note?' note':'')+'">'+esc(l)+'</div>';}).join("");
+  const head=showHeader?'<div class="dchead"><span class="ddate">'+fmtDate(date)+'</span><span class="dcount">'+day.patients+' patient'+(day.patients===1?"":"s")+' · '+day.boxes+' boxes</span></div>':"";
+  return '<div class="daycard" data-editday="'+date+'">'+head+body+'</div>';
+}
+
+/* ---------- LOG (quick add) ---------- */
+const logInput=document.getElementById("logInput"),logPreview=document.getElementById("logPreview"),applyBtn=document.getElementById("applyBtn"),logDate=document.getElementById("logDate");
+function renderPreview(){logPreview.innerHTML=logInput.value.trim()?previewHTML(logInput.value):"";applyBtn.disabled=!logInput.value.trim();}
+logInput.addEventListener("input",renderPreview);
+applyBtn.addEventListener("click",()=>{
+  if(!logInput.value.trim())return;
+  const date=logDate.value||todayStr();
+  const prev=S.days[date]?S.days[date].text:"";
+  setDay(date,prev?(prev+"\n"+logInput.value.trim()):logInput.value.trim());
+  logInput.value="";renderPreview();renderAll();toast("Added to "+fmtDate(date));
+});
+function renderToday(){
+  const date=logDate.value||todayStr(),day=S.days[date],card=document.getElementById("todayCard");
+  if(!day){card.style.display="none";return;}
+  card.style.display="";document.getElementById("todayHead").textContent=fmtDate(date)+" — tap to edit";
+  document.getElementById("todayList").innerHTML=dayCard(date,day,false);
+}
+
+/* ---------- ENTRIES ---------- */
+const histList=document.getElementById("histList"),histSearch=document.getElementById("histSearch");
+function renderEntries(){
+  const q=histSearch.value.trim().toLowerCase();
+  const dates=Object.keys(S.days).sort().reverse();
+  let html="";
+  for(const d of dates){const day=S.days[d];if(q&&!(day.text.toLowerCase().includes(q)||d.includes(q)))continue;html+=dayCard(d,day,true);}
+  histList.innerHTML=html||'<div class="empty">No entries yet. Use Add or + Add / edit a day.</div>';
+}
+histSearch.addEventListener("input",renderEntries);
+document.getElementById("addEntryBtn").addEventListener("click",()=>openDay(logDate.value||todayStr()));
+document.body.addEventListener("click",e=>{const r=e.target.closest("[data-editday]");if(r)openDay(r.dataset.editday);});
+
+/* ---------- DAY EDITOR (auto-save) ---------- */
+const entrySheet=document.getElementById("entrySheet"),eDate=document.getElementById("eDate"),eDayText=document.getElementById("eDayText"),ePreview=document.getElementById("ePreview"),eDelete=document.getElementById("eDelete"),entryTitle=document.getElementById("entryTitle");
+let curDate=null,saveTimer=null;
+function loadInto(date){curDate=date;eDate.value=date;eDayText.value=S.days[date]?S.days[date].text:"";entryTitle.textContent=fmtDate(date);eDelete.style.display=S.days[date]?"":"none";ePreview.innerHTML=eDayText.value.trim()?previewHTML(eDayText.value):"";}
+function openDay(date){loadInto(date);entrySheet.classList.add("open");}
+function commitEditor(){clearTimeout(saveTimer);saveTimer=null;if(curDate==null)return;setDay(curDate,eDayText.value);eDelete.style.display=S.days[curDate]?"":"none";updateStats();}
+eDayText.addEventListener("input",()=>{ePreview.innerHTML=eDayText.value.trim()?previewHTML(eDayText.value):"";clearTimeout(saveTimer);saveTimer=setTimeout(commitEditor,350);});
+eDate.addEventListener("change",()=>{commitEditor();loadInto(eDate.value);});
+function closeEditor(){commitEditor();entrySheet.classList.remove("open");curDate=null;renderAll();}
+document.getElementById("eDone").addEventListener("click",closeEditor);
+document.querySelectorAll("[data-close-entry]").forEach(el=>el.addEventListener("click",closeEditor));
+eDelete.addEventListener("click",()=>{
+  const date=curDate;if(!date)return;
+  if(!confirm("Delete all entries for "+fmtDate(date)+" and return their boxes to stock?"))return;
+  const old=S.days[date];if(old)applyDeductions(old.deductions,+1);delete S.days[date];save();
+  clearTimeout(saveTimer);saveTimer=null;entrySheet.classList.remove("open");curDate=null;renderAll();toast("Day deleted");
 });
 
-function renderToday(){
-  const date=logDate.value||todayStr();
-  const items=S.log.filter(e=>e.date===date).reverse();
-  const card=document.getElementById("todayCard");
-  document.getElementById("todayDateLabel").textContent=fmtDate(date);
-  if(!items.length){card.style.display="none";return;}
-  card.style.display="";
-  document.getElementById("todayList").innerHTML=items.map(rowHistory).join("");
-}
-
-/* ---------- STOCK view ---------- */
-const stockList=document.getElementById("stockList");
-const editMode=document.getElementById("editMode");
-const stockSearch=document.getElementById("stockSearch");
-
+/* ---------- STOCK ---------- */
+const stockList=document.getElementById("stockList"),editMode=document.getElementById("editMode"),stockSearch=document.getElementById("stockSearch");
 function renderStock(){
-  const edit=editMode.checked;
-  const q=stockSearch.value.trim().toLowerCase();
+  const edit=editMode.checked,q=stockSearch.value.trim().toLowerCase();
   document.getElementById("stockEditNote").style.display=edit?"":"none";
   document.getElementById("stockEditActions").style.display=edit?"":"none";
   let html="";
-  for(const p of PREFIXES){
-    const cat=CATALOG[p];
-    if(cat.optional && !S.showTex) continue;
-    const rows=[];
-    for(const size of cat.sizes){
-      const code=p+size; const qty=S.stock[code]||0;
-      if(!edit && qty===0) continue;
-      if(q){const hay=(code+" "+cat.brand+" "+cat.surface).toLowerCase();if(!hay.includes(q))continue;}
-      let cls="srow";
-      if(qty<0)cls+=" neg"; else if(qty===0)cls+=" zero"; else if(qty<=S.thresh)cls+=" low";
-      const right=edit
-        ? '<div class="stepper"><button data-step="'+code+'" data-d="-1">−</button>'+
-          '<input type="number" data-code="'+code+'" value="'+qty+'"><button data-step="'+code+'" data-d="1">+</button></div>'
-        : '<div class="qty">'+qty+'</div>';
-      rows.push('<div class="'+cls+'"><div class="code">'+code.toUpperCase()+'</div>'+
-        '<div class="desc">'+esc(cat.surface||"—")+'</div>'+right+'</div>');
+  for(const g of groups(S.showTex)){
+    const rows=[];let sub=0;
+    for(const code of g.codes){
+      const qty=S.stock[code]||0;sub+=Math.max(0,qty);
+      if(!edit&&qty===0)continue;
+      if(q){if(!(code+" "+g.label+" "+g.surface).toLowerCase().includes(q))continue;}
+      let cls="srow";if(qty<0)cls+=" neg";else if(qty===0)cls+=" zero";else if(qty<=S.thresh)cls+=" low";
+      const right=edit?'<div class="stepper"><button data-step="'+code+'" data-d="-1">−</button><input type="number" data-code="'+code+'" value="'+qty+'"><button data-step="'+code+'" data-d="1">+</button></div>':'<div class="qty">'+qty+'</div>';
+      rows.push('<div class="'+cls+'"><div class="code">'+code.toUpperCase()+'</div><div class="desc">'+esc(g.surface||"—")+'</div>'+right+'</div>');
     }
-    if(rows.length){
-      let sub=0; for(const size of cat.sizes) sub+=Math.max(0,S.stock[p+size]||0);
-      html+='<div class="brandhdr">'+esc(cat.brand)+(cat.surface?" · "+cat.surface:"")+'<span>'+sub+' boxes</span></div>'+rows.join("");
-    }
+    if(rows.length)html+='<div class="brandhdr">'+esc(g.label)+(g.surface?" · "+g.surface:"")+'<span>'+sub+' boxes</span></div>'+rows.join("");
   }
-  if(!html) html='<div class="empty">'+(edit?"No sizes match.":"No stock yet. Tap Edit to enter your counts.")+'</div>';
-  stockList.innerHTML=html;
+  stockList.innerHTML=html||'<div class="empty">'+(edit?"No sizes match.":"No stock yet. Tap Edit to enter your counts.")+'</div>';
 }
 editMode.addEventListener("change",renderStock);
 stockSearch.addEventListener("input",renderStock);
-stockList.addEventListener("click",e=>{
-  const b=e.target.closest("button[data-step]"); if(!b)return;
-  const code=b.dataset.step; S.stock[code]=(S.stock[code]||0)+(+b.dataset.d);
-  save(); renderStock(); updateStats();
-});
-stockList.addEventListener("change",e=>{
-  const i=e.target.closest("input[data-code]"); if(!i)return;
-  S.stock[i.dataset.code]=Math.round(+i.value||0); save(); renderStock(); updateStats();
-});
-document.getElementById("setBaselineBtn").addEventListener("click",()=>{
-  S.monthStart=todayStr(); save(); renderAll(); editMode.checked=false; renderStock();
-  toast("Month start set to today");
-});
+stockList.addEventListener("click",e=>{const b=e.target.closest("button[data-step]");if(!b)return;S.stock[b.dataset.step]=(S.stock[b.dataset.step]||0)+(+b.dataset.d);save();renderStock();updateStats();});
+stockList.addEventListener("change",e=>{const i=e.target.closest("input[data-code]");if(!i)return;S.stock[i.dataset.code]=Math.round(+i.value||0);save();renderStock();updateStats();});
+document.getElementById("setBaselineBtn").addEventListener("click",()=>{S.monthStart=todayStr();save();renderAll();editMode.checked=false;renderStock();toast("Month start set to today");});
 
-/* ---------- HISTORY view ---------- */
-const histList=document.getElementById("histList");
-const histSearch=document.getElementById("histSearch");
-function rowHistory(e){
-  const ded=e.deductions.map(d=>d.code.toUpperCase()+"×"+d.qty).join("  ");
-  return '<div class="hrow"><div class="hinfo"><div class="hname">'+esc(e.name)+'</div>'+
-    '<div class="hded">'+esc(ded)+'</div></div>'+
-    '<button class="hundo" data-undo="'+e.id+'">Undo</button></div>';
-}
-function renderHistory(){
-  const q=histSearch.value.trim().toLowerCase();
-  let items=S.log.slice().reverse();
-  if(q) items=items.filter(e=>(e.name+" "+e.deductions.map(d=>d.code).join(" ")).toLowerCase().includes(q));
-  if(!items.length){histList.innerHTML='<div class="empty">No entries.</div>';return;}
-  let html="",curDate=null;
-  for(const e of items){
-    if(e.date!==curDate){curDate=e.date;html+='<div class="datehdr">'+fmtDate(e.date)+'</div>';}
-    html+=rowHistory(e);
-  }
-  histList.innerHTML=html;
-}
-histSearch.addEventListener("input",renderHistory);
-function undo(id){
-  const i=S.log.findIndex(e=>e.id===id); if(i<0)return;
-  const e=S.log[i];
-  for(const d of e.deductions) S.stock[d.code]=(S.stock[d.code]||0)+d.qty;
-  S.log.splice(i,1); save(); renderAll(); toast("Reverted: "+e.name);
-}
-document.body.addEventListener("click",e=>{
-  const u=e.target.closest("[data-undo]"); if(u) undo(u.dataset.undo);
-});
-
-/* ---------- MONTH-END view ---------- */
-const monthList=document.getElementById("monthList");
-const monthShowAll=document.getElementById("monthShowAll");
+/* ---------- MONTH-END ---------- */
+const monthList=document.getElementById("monthList"),monthShowAll=document.getElementById("monthShowAll");
 let counted={};
 function renderMonth(){
-  const all=monthShowAll.checked;
-  const codes=allCodes(S.showTex).filter(c=>all||(S.stock[c]||0)!==0);
-  if(!codes.length){monthList.innerHTML='<div class="empty">No stock to check.</div>';}
-  else{
-    monthList.innerHTML=codes.map(code=>{
-      const exp=S.stock[code]||0;
-      const cv=counted[code];
-      const has=cv!==undefined&&cv!=="";
-      const v=has?(+cv-exp):null;
-      const vcls=v===null?"":(v===0?"match":"off");
-      const vtxt=v===null?"—":(v>0?"+"+v:""+v);
-      return '<div class="mrow"><div class="code">'+code.toUpperCase()+'</div>'+
-        '<div class="exp">'+exp+'</div>'+
-        '<input type="number" data-m="'+code+'" value="'+(has?cv:"")+'" placeholder="–">'+
-        '<div class="var '+vcls+'">'+vtxt+'</div></div>';
-    }).join("");
-  }
+  const all=monthShowAll.checked,codes=allCodes(S.showTex).filter(c=>all||(S.stock[c]||0)!==0);
+  monthList.innerHTML=codes.length?codes.map(code=>{
+    const exp=S.stock[code]||0,cv=counted[code],has=cv!==undefined&&cv!=="";
+    const v=has?(+cv-exp):null,vcls=v===null?"":(v===0?"match":"off"),vtxt=v===null?"—":(v>0?"+"+v:""+v);
+    return '<div class="mrow"><div class="code">'+code.toUpperCase()+'</div><div class="exp">'+exp+'</div><input type="number" data-m="'+code+'" value="'+(has?cv:"")+'" placeholder="–"><div class="var '+vcls+'">'+vtxt+'</div></div>';
+  }).join(""):'<div class="empty">No stock to check.</div>';
   renderArchive();
 }
 monthShowAll.addEventListener("change",renderMonth);
-monthList.addEventListener("input",e=>{
-  const i=e.target.closest("input[data-m]"); if(!i)return;
-  counted[i.dataset.m]=i.value; 
-  // light re-render of just variance: simplest is full re-render but keep focus
-  const code=i.dataset.m, exp=S.stock[code]||0;
-  const has=i.value!==""; const v=has?(+i.value-exp):null;
-  const vEl=i.nextElementSibling;
-  vEl.textContent=v===null?"—":(v>0?"+"+v:""+v);
-  vEl.className="var "+(v===null?"":(v===0?"match":"off"));
-});
+monthList.addEventListener("input",e=>{const i=e.target.closest("input[data-m]");if(!i)return;counted[i.dataset.m]=i.value;const exp=S.stock[i.dataset.m]||0,has=i.value!=="",v=has?(+i.value-exp):null,el=i.nextElementSibling;el.textContent=v===null?"—":(v>0?"+"+v:""+v);el.className="var "+(v===null?"":(v===0?"match":"off"));});
 document.getElementById("commitMonthBtn").addEventListener("click",()=>{
   const entered=Object.keys(counted).filter(c=>counted[c]!==""&&counted[c]!==undefined);
   if(!entered.length){toast("Type at least one counted number first");return;}
-  if(!confirm("Commit counted stock as the new baseline and start a new month? Sizes you left blank keep their expected number.")) return;
-  const um=usedThisMonth();
-  const snapshot={start:S.monthStart,end:todayStr(),usedBoxes:um.boxes,patients:um.patients,variances:{}};
-  for(const c of entered){const exp=S.stock[c]||0;const cnt=Math.round(+counted[c]);snapshot.variances[c]=cnt-exp;S.stock[c]=cnt;}
-  S.archive.unshift(snapshot);
-  S.monthStart=todayStr();
-  counted={}; save(); renderAll(); toast("New month started");
+  if(!confirm("Commit counted stock as the new baseline and start a new month? Blank sizes keep their expected number."))return;
+  const um=usedThisMonth(),snap={start:S.monthStart,end:todayStr(),usedBoxes:um.boxes,patients:um.patients,variances:{}};
+  for(const c of entered){const exp=S.stock[c]||0,cnt=Math.round(+counted[c]);snap.variances[c]=cnt-exp;S.stock[c]=cnt;}
+  S.archive.unshift(snap);S.monthStart=todayStr();counted={};save();renderAll();toast("New month started");
 });
 function renderArchive(){
   const card=document.getElementById("archiveCard");
@@ -579,52 +514,33 @@ function renderArchive(){
   document.getElementById("archiveList").innerHTML=S.archive.map(a=>{
     const offs=Object.entries(a.variances).filter(([c,v])=>v!==0);
     const offTxt=offs.length?offs.map(([c,v])=>c.toUpperCase()+" "+(v>0?"+"+v:v)).join("  "):"all matched";
-    return '<div class="hrow"><div class="hinfo"><div class="hname">'+fmtDate(a.start)+" → "+fmtDate(a.end)+'</div>'+
-      '<div class="hded">'+a.usedBoxes+' boxes · '+a.patients+' patients · '+esc(offTxt)+'</div></div></div>';
+    return '<div class="hrow"><div class="hinfo"><div class="hname">'+fmtDate(a.start)+" → "+fmtDate(a.end)+'</div><div class="hded">'+a.usedBoxes+" boxes · "+a.patients+" patients · "+esc(offTxt)+'</div></div></div>';
   }).join("");
 }
 
 /* ---------- setup ---------- */
-const sheet=document.getElementById("setupSheet");
-document.getElementById("openSetup").addEventListener("click",()=>{
-  document.getElementById("threshInput").value=S.thresh;
-  document.getElementById("texToggle").checked=S.showTex;
-  sheet.classList.add("open");
-});
-sheet.addEventListener("click",e=>{if(e.target.hasAttribute("data-close"))sheet.classList.remove("open");});
+const setupSheet=document.getElementById("setupSheet");
+document.getElementById("openSetup").addEventListener("click",()=>{document.getElementById("threshInput").value=S.thresh;document.getElementById("texToggle").checked=S.showTex;setupSheet.classList.add("open");});
+setupSheet.addEventListener("click",e=>{if(e.target.hasAttribute("data-close"))setupSheet.classList.remove("open");});
 document.getElementById("threshInput").addEventListener("change",e=>{S.thresh=Math.max(0,Math.round(+e.target.value||0));save();renderStock();});
 document.getElementById("texToggle").addEventListener("change",e=>{S.showTex=e.target.checked;save();renderAll();});
-document.getElementById("exportBtn").addEventListener("click",()=>{
-  const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-  a.download="implant-stock-"+todayStr()+".json";a.click();URL.revokeObjectURL(a.href);
-  toast("Backup downloaded");
-});
+document.getElementById("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="implant-stock-"+todayStr()+".json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded");});
 document.getElementById("importBtn").addEventListener("click",()=>document.getElementById("importFile").click());
-document.getElementById("importFile").addEventListener("change",e=>{
-  const f=e.target.files[0]; if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{try{const o=JSON.parse(r.result);if(!confirm("Replace ALL current data with this backup?"))return;S=Object.assign(blank(),o);save();syncControls();renderAll();sheet.classList.remove("open");toast("Backup restored");}catch(err){toast("Invalid file");}};
-  r.readAsText(f); e.target.value="";
-});
-document.getElementById("resetBtn").addEventListener("click",()=>{
-  if(!confirm("Erase ALL data on this phone? Export a backup first if unsure."))return;
-  S=blank();save();syncControls();renderAll();sheet.classList.remove("open");toast("Data erased");
-});
+document.getElementById("importFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!confirm("Replace ALL current data with this backup?"))return;S=Object.assign(blank(),o);migrate();save();syncControls();renderAll();setupSheet.classList.remove("open");toast("Backup restored");}catch(err){toast("Invalid file");}};r.readAsText(f);e.target.value="";});
+document.getElementById("resetBtn").addEventListener("click",()=>{if(!confirm("Erase ALL data on this device? Export a backup first if unsure."))return;S=blank();save();syncControls();renderAll();setupSheet.classList.remove("open");toast("Data erased");});
 
 /* ---------- nav ---------- */
 document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");
-  document.getElementById("view-"+b.dataset.view).classList.add("active");
+  b.classList.add("active");document.getElementById("view-"+b.dataset.view).classList.add("active");
   if(b.dataset.view==="stock")renderStock();
-  if(b.dataset.view==="history")renderHistory();
+  if(b.dataset.view==="entries")renderEntries();
   if(b.dataset.view==="month"){counted={};renderMonth();}
   window.scrollTo(0,0);
 }));
 
-/* ---------- render orchestration ---------- */
+/* ---------- orchestration ---------- */
 function updateStats(){
   document.getElementById("statStock").innerHTML=totalStock()+'<small> boxes</small>';
   const um=usedThisMonth();
@@ -632,18 +548,12 @@ function updateStats(){
   document.getElementById("statPat").textContent=um.patients;
   document.getElementById("monthLabel").textContent="Month from "+fmtDate(S.monthStart);
 }
-function renderAll(){updateStats();renderStock();renderHistory();renderToday();renderMonth();}
-function syncControls(){
-  document.getElementById("threshInput").value=S.thresh;
-  document.getElementById("texToggle").checked=S.showTex;
-}
+function renderAll(){updateStats();renderStock();renderEntries();renderToday();renderMonth();}
+function syncControls(){document.getElementById("threshInput").value=S.thresh;document.getElementById("texToggle").checked=S.showTex;}
 
-/* init */
 logDate.value=todayStr();
 logDate.addEventListener("change",renderToday);
-renderPreview();
-syncControls();
-renderAll();
+renderPreview();syncControls();renderAll();
 </script>
 </body>
 </html>
