@@ -258,6 +258,20 @@
       <p class="small">Off by default. Smooth is <b>mt350s</b>; textured would be <b>mt350t</b>. Turn this on only if textured returns.</p>
     </div>
     <div class="card">
+      <h2>Sync (PC ↔ phone)</h2>
+      <span class="label">Apps Script URL</span>
+      <input type="text" id="syncUrl" placeholder="https://script.google.com/macros/s/…/exec" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <span class="label" style="margin-top:10px">Passcode</span>
+      <input type="text" id="syncPass" placeholder="same secret as in the script" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <label class="toggle" style="text-transform:none;font-size:13px;color:var(--ink);margin-top:12px">Auto-sync (pull on open, push on change)<input type="checkbox" id="syncAuto"></label>
+      <div class="minirow" style="margin-top:12px">
+        <button class="btn btn-ghost" id="syncPullBtn">⬇ Pull</button>
+        <button class="btn btn-ghost" id="syncPushBtn">⬆ Push</button>
+      </div>
+      <p class="small" id="syncStatus">Not synced yet</p>
+      <p class="small">URL &amp; passcode stay on this device only (never in GitHub). Enter the same two on every device. Newest edit wins.</p>
+    </div>
+    <div class="card">
       <h2>Backup</h2>
       <div class="minirow">
         <button class="btn btn-ghost" id="exportBtn">⬇ Export file</button>
@@ -306,10 +320,16 @@ function allCodes(includeTex){return groups(includeTex).flatMap(g=>g.codes);}
 
 /* ---------- state ---------- */
 const KEY="implantStock.v2";
+const SKEY="implantStock.sync";
+let syncCfg=loadSync();
 let S=load();migrate();
-function blank(){return {stock:{},monthStart:todayStr(),days:{},archive:[],thresh:2,showTex:false};}
+function blank(){return {stock:{},monthStart:todayStr(),days:{},archive:[],thresh:2,showTex:false,updatedAt:0};}
 function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r));}catch(e){}return blank();}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast("Could not save — storage blocked");}}
+function loadSync(){try{return Object.assign({url:"",pass:"",auto:false,last:0},JSON.parse(localStorage.getItem(SKEY)||"{}"));}catch(e){return{url:"",pass:"",auto:false,last:0};}}
+function saveSync(){try{localStorage.setItem(SKEY,JSON.stringify(syncCfg));}catch(e){}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast("Could not save — storage blocked");}}
+function save(){S.updatedAt=Date.now();persist();schedulePush();}
+function schedulePush(){if(!syncCfg||!syncCfg.auto||!syncCfg.url)return;clearTimeout(window._pushTimer);window._pushTimer=setTimeout(()=>syncPush(true),1500);}
 function migrate(){ // old per-entry log -> per-day text (stock already applied, do not re-apply)
   if(S.log&&S.log.length&&(!S.days||Object.keys(S.days).length===0)){
     S.days=S.days||{}; const byDate={};
@@ -319,7 +339,7 @@ function migrate(){ // old per-entry log -> per-day text (stock already applied,
       const pd=parseDay(text);
       S.days[date]={text,deductions:pd.deductions,boxes:pd.boxes,patients:pd.patients};
     }
-    delete S.log; save();
+    delete S.log; persist();
   }
 }
 
@@ -529,6 +549,47 @@ document.getElementById("importBtn").addEventListener("click",()=>document.getEl
 document.getElementById("importFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!confirm("Replace ALL current data with this backup?"))return;S=Object.assign(blank(),o);migrate();save();syncControls();renderAll();setupSheet.classList.remove("open");toast("Backup restored");}catch(err){toast("Invalid file");}};r.readAsText(f);e.target.value="";});
 document.getElementById("resetBtn").addEventListener("click",()=>{if(!confirm("Erase ALL data on this device? Export a backup first if unsure."))return;S=blank();save();syncControls();renderAll();setupSheet.classList.remove("open");toast("Data erased");});
 
+/* ---------- cloud sync (Google Apps Script) ---------- */
+function syncStatus(msg){const el=document.getElementById("syncStatus");if(el)el.textContent=msg;}
+function syncLastText(){return syncCfg.last?("Last synced "+new Date(syncCfg.last).toLocaleString()):"Not synced yet";}
+async function syncPush(silent){
+  if(!syncCfg.url){if(!silent)toast("Enter sync URL first");return;}
+  syncStatus("Pushing…");
+  try{
+    const r=await fetch(syncCfg.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({pass:syncCfg.pass,data:S})});
+    const j=await r.json();
+    if(j.error){syncStatus("Error: "+j.error);if(!silent)toast("Sync: "+j.error);return;}
+    syncCfg.last=Date.now();saveSync();syncStatus(syncLastText());if(!silent)toast("Pushed to cloud");
+  }catch(e){syncStatus("Push failed — check URL / connection");if(!silent)toast("Push failed");}
+}
+async function syncPull(silent){
+  if(!syncCfg.url){if(!silent)toast("Enter sync URL first");return;}
+  syncStatus("Pulling…");
+  try{
+    const r=await fetch(syncCfg.url+"?pass="+encodeURIComponent(syncCfg.pass)+"&t="+Date.now());
+    const j=await r.json();
+    if(j.error){syncStatus("Error: "+j.error);if(!silent)toast("Sync: "+j.error);return;}
+    const remote=j.data||{};
+    if(!remote.updatedAt){syncStatus("Cloud is empty — Push first");if(!silent)toast("Cloud is empty — Push first");return;}
+    if((remote.updatedAt||0)>(S.updatedAt||0)){
+      S=Object.assign(blank(),remote);migrate();persist();renderAll();
+      syncCfg.last=Date.now();saveSync();syncStatus("Pulled · "+syncLastText());if(!silent)toast("Pulled from cloud");
+    }else{
+      syncCfg.last=Date.now();saveSync();syncStatus("Already up to date");if(!silent)toast("This device already has the newest");
+    }
+  }catch(e){syncStatus("Pull failed — check URL / connection");if(!silent)toast("Pull failed");}
+}
+function syncRenderControls(){
+  const u=document.getElementById("syncUrl"),p=document.getElementById("syncPass"),a=document.getElementById("syncAuto");
+  if(u)u.value=syncCfg.url||"";if(p)p.value=syncCfg.pass||"";if(a)a.checked=!!syncCfg.auto;
+  syncStatus(syncLastText());
+}
+document.getElementById("syncUrl").addEventListener("change",e=>{syncCfg.url=e.target.value.trim();saveSync();});
+document.getElementById("syncPass").addEventListener("change",e=>{syncCfg.pass=e.target.value.trim();saveSync();});
+document.getElementById("syncAuto").addEventListener("change",e=>{syncCfg.auto=e.target.checked;saveSync();if(syncCfg.auto&&syncCfg.url)syncPull(true);});
+document.getElementById("syncPullBtn").addEventListener("click",()=>syncPull(false));
+document.getElementById("syncPushBtn").addEventListener("click",()=>syncPush(false));
+
 /* ---------- nav ---------- */
 document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
@@ -553,7 +614,8 @@ function syncControls(){document.getElementById("threshInput").value=S.thresh;do
 
 logDate.value=todayStr();
 logDate.addEventListener("change",renderToday);
-renderPreview();syncControls();renderAll();
+renderPreview();syncControls();renderAll();syncRenderControls();
+if(syncCfg.auto&&syncCfg.url)syncPull(true);
 </script>
 </body>
 </html>
