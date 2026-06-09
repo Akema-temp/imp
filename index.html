@@ -321,7 +321,7 @@
 "use strict";
 
 /* Bump this whenever the program changes, so you can confirm the device loaded the latest. */
-const VERSION="2026-06-09 20:15";
+const VERSION="2026-06-09 20:55";
 
 /* ---------- catalog ---------- */
 const BRANDS = {
@@ -329,12 +329,14 @@ const BRANDS = {
   eu:{brand:"Euro",   sizes:[280,300,325,350,375,400,450,500,550,600,650,700]},
   sm:{brand:"Silimed",sizes:[335,365,390,420,445]},
   mt:{brand:"Mentor", sizes:[275,300,325,350,375,400,450,500,550,600,650,700]},
+  x: {brand:"Mentor Xtragel", sizes:[285,335,355,380,415,450,465,490,535,595]},
 };
-const SIZES={Motiva:BRANDS.mv.sizes,Euro:BRANDS.eu.sizes,Silimed:BRANDS.sm.sizes,Mentor:BRANDS.mt.sizes};
-const CODE_RE=/(?:mv|eu|sm|mt)\s*\d{2,3}[st]?(?:\s*\/\s*(?:(?:mv|eu|sm|mt)\s*)?\d{2,3}[st]?)*/i;
+const SIZES={Motiva:BRANDS.mv.sizes,Euro:BRANDS.eu.sizes,Silimed:BRANDS.sm.sizes,Mentor:BRANDS.mt.sizes,"Mentor Xtragel":BRANDS.x.sizes};
+const CODE_RE=/\b(?:mv|eu|sm|mt|x)\s*\d{2,3}[st]?(?:\s*\/\s*(?:(?:mv|eu|sm|mt|x)\s*)?\d{2,3}[st]?)*/i;
 
 function codeInfo(code){let m;
   if(m=code.match(/^mt(\d{2,3})([st])$/))return{brand:"Mentor",size:+m[1],surface:m[2]==="s"?"smooth":"textured"};
+  if(m=code.match(/^x(\d{2,3})$/))return{brand:"Mentor Xtragel",size:+m[1],surface:""};
   if(m=code.match(/^(mv|eu|sm)(\d{2,3})$/))return{brand:{mv:"Motiva",eu:"Euro",sm:"Silimed"}[m[1]],size:+m[2],surface:""};
   return null;}
 function groups(includeTex){
@@ -342,6 +344,7 @@ function groups(includeTex){
     {label:"Motiva", surface:"", codes:BRANDS.mv.sizes.map(s=>"mv"+s)},
     {label:"Euro",   surface:"", codes:BRANDS.eu.sizes.map(s=>"eu"+s)},
     {label:"Mentor", surface:"smooth", codes:BRANDS.mt.sizes.map(s=>"mt"+s+"s")},
+    {label:"Mentor", surface:"Xtragel", codes:BRANDS.x.sizes.map(s=>"x"+s)},
     {label:"Silimed",surface:"", codes:BRANDS.sm.sizes.map(s=>"sm"+s)},
   ];
   if(includeTex) g.push({label:"Mentor",surface:"textured",codes:BRANDS.mt.sizes.map(s=>"mt"+s+"t")});
@@ -389,7 +392,7 @@ function parseSpecCore(specText){
   const segs=spec.split("/"); const isPair=segs.length===1;
   let curBrand=null,curSurf="s"; const map={}; const errors=[];
   for(const seg of segs){
-    const mm=seg.match(/^(mv|eu|sm|mt)?(\d{2,3})([st])?$/);
+    const mm=seg.match(/^(mv|eu|sm|mt|x)?(\d{2,3})([st])?$/);
     if(!mm){errors.push("bad part: "+seg);continue;}
     const brand=mm[1]||curBrand; const size=+mm[2]; const suf=mm[3];
     if(!brand){errors.push("no brand for "+size);continue;}
@@ -538,7 +541,7 @@ document.getElementById("setBaselineBtn").addEventListener("click",()=>{S.monthS
 
 /* ---------- RESTOCK (stock-in) ---------- */
 function parseRestockLine(line){
-  const m=line.match(/(mv|eu|sm|mt)\s*(\d{2,3})([st])?/i);
+  const m=line.match(/\b(mv|eu|sm|mt|x)\s*(\d{2,3})([st])?/i);
   if(!m)return null;
   const b=m[1].toLowerCase(),sz=+m[2],su=(m[3]||"").toLowerCase();
   const code=(b==="mt")?("mt"+sz+(su||"s")):(b+sz);
