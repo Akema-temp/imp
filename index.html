@@ -321,7 +321,7 @@
 "use strict";
 
 /* Bump this whenever the program changes, so you can confirm the device loaded the latest. */
-const VERSION="2026-06-09 19:40";
+const VERSION="2026-06-09 20:15";
 
 /* ---------- catalog ---------- */
 const BRANDS = {
@@ -380,6 +380,7 @@ function totalStock(){let t=0;for(const k in S.stock)t+=S.stock[k];return t;}
 function usedThisMonth(){let b=0,p=0;for(const d in S.days){if(d>=S.monthStart){b+=S.days[d].boxes;p+=S.days[d].patients;}}return{boxes:b,patients:p};}
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2000);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function uid(){return Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7);}
 
 /* ---------- parser ---------- */
 function parseSpecCore(specText){
