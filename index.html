@@ -183,6 +183,7 @@
     <!-- STOCK -->
     <section class="view" id="view-stock">
       <div class="card">
+        <button class="btn btn-primary" id="restockBtn" style="margin-bottom:12px">+ Stock in / restock</button>
         <div class="toolbar">
           <input type="text" class="search" id="stockSearch" placeholder="Filter code / brand…">
           <label class="toggle" title="Edit counts">Edit<input type="checkbox" id="editMode"></label>
@@ -193,6 +194,10 @@
           <button class="btn btn-primary" id="setBaselineBtn">Set as month start (today)</button>
           <p class="small">Saves current counts as the starting baseline and begins a new month for the "used this month" tally. Do this right after your physical count.</p>
         </div>
+      </div>
+      <div class="card" id="restockCard" style="display:none">
+        <h2 id="restockHead">Stock-ins</h2>
+        <div id="restockList"></div>
       </div>
     </section>
 
@@ -239,6 +244,26 @@
     </div>
     <button class="btn btn-primary" id="eDone">Done</button>
     <button class="btn btn-danger" id="eDelete" style="width:100%;margin-top:8px;display:none">Delete this day</button>
+  </div>
+</div>
+
+<!-- RESTOCK SHEET -->
+<div class="sheet" id="restockSheet">
+  <div class="backdrop" data-close-restock></div>
+  <div class="panel">
+    <div class="grab"></div>
+    <h2 id="restockTitle">Stock in</h2>
+    <div class="card">
+      <span class="label">Date received</span>
+      <input type="date" id="rDate">
+      <span class="label" style="margin-top:12px">What came in — one per line</span>
+      <textarea id="rText" placeholder="mv450 2&#10;mt350s 4&#10;eu400 2" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      <p class="hint">Format: <b>code</b> then <b>boxes</b>, e.g. <b>mv450 2</b>. Just a code adds 2 (a pair).</p>
+      <div class="preview" id="rPreview"></div>
+    </div>
+    <button class="btn btn-primary" id="rAdd">Add to stock</button>
+    <button class="btn btn-danger" id="rDelete" style="width:100%;margin-top:8px;display:none">Delete this stock-in</button>
+    <button class="btn btn-ghost" data-close-restock style="width:100%;margin-top:8px">Cancel</button>
   </div>
 </div>
 
@@ -323,7 +348,7 @@ const KEY="implantStock.v2";
 const SKEY="implantStock.sync";
 let syncCfg=loadSync();
 let S=load();migrate();
-function blank(){return {stock:{},monthStart:todayStr(),days:{},archive:[],thresh:2,showTex:false,updatedAt:0};}
+function blank(){return {stock:{},monthStart:todayStr(),days:{},restocks:[],archive:[],thresh:2,showTex:false,updatedAt:0};}
 function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r));}catch(e){}return blank();}
 function loadSync(){try{return Object.assign({url:"",pass:"",auto:false,last:0},JSON.parse(localStorage.getItem(SKEY)||"{}"));}catch(e){return{url:"",pass:"",auto:false,last:0};}}
 function saveSync(){try{localStorage.setItem(SKEY,JSON.stringify(syncCfg));}catch(e){}}
@@ -458,7 +483,7 @@ function renderEntries(){
 }
 histSearch.addEventListener("input",renderEntries);
 document.getElementById("addEntryBtn").addEventListener("click",()=>openDay(logDate.value||todayStr()));
-document.body.addEventListener("click",e=>{const r=e.target.closest("[data-editday]");if(r)openDay(r.dataset.editday);});
+document.body.addEventListener("click",e=>{const r=e.target.closest("[data-editday]");if(r){openDay(r.dataset.editday);return;}const rs=e.target.closest("[data-restock]");if(rs)openRestock(rs.dataset.restock);});
 
 /* ---------- DAY EDITOR (auto-save) ---------- */
 const entrySheet=document.getElementById("entrySheet"),eDate=document.getElementById("eDate"),eDayText=document.getElementById("eDayText"),ePreview=document.getElementById("ePreview"),eDelete=document.getElementById("eDelete"),entryTitle=document.getElementById("entryTitle");
@@ -505,6 +530,78 @@ stockList.addEventListener("click",e=>{const b=e.target.closest("button[data-ste
 stockList.addEventListener("change",e=>{const i=e.target.closest("input[data-code]");if(!i)return;S.stock[i.dataset.code]=Math.round(+i.value||0);save();renderStock();updateStats();});
 document.getElementById("setBaselineBtn").addEventListener("click",()=>{S.monthStart=todayStr();save();renderAll();editMode.checked=false;renderStock();toast("Month start set to today");});
 
+/* ---------- RESTOCK (stock-in) ---------- */
+function parseRestockLine(line){
+  const m=line.match(/(mv|eu|sm|mt)\s*(\d{2,3})([st])?/i);
+  if(!m)return null;
+  const b=m[1].toLowerCase(),sz=+m[2],su=(m[3]||"").toLowerCase();
+  const code=(b==="mt")?("mt"+sz+(su||"s")):(b+sz);
+  const info=codeInfo(code);
+  let warn=null;
+  if(!info)warn="unknown code";else if(!SIZES[info.brand].includes(info.size))warn=info.size+" not a "+info.brand+" size";
+  const after=line.slice(m.index+m[0].length);
+  const qm=after.match(/x?\s*(\d{1,3})/i);
+  let qty=qm?+qm[1]:2; if(qty<1)qty=1; if(qty>500)qty=500;
+  return {code,qty,warn};
+}
+function parseRestock(text){
+  const map={};const view=[];let total=0;
+  for(const raw of String(text).split(/\r?\n/)){
+    const line=raw.trim();if(!line)continue;
+    if(/^(#|\/\/)/.test(line)){view.push({type:"note",text:line});continue;}
+    const r=parseRestockLine(line);
+    if(!r){view.push({type:"note",text:line});continue;}
+    if(r.warn){view.push({type:"bad",code:r.code,qty:r.qty,warn:r.warn});continue;}
+    map[r.code]=(map[r.code]||0)+r.qty;total+=r.qty;view.push({type:"in",code:r.code,qty:r.qty});
+  }
+  return {items:Object.entries(map).map(([code,qty])=>({code,qty})),view,total};
+}
+function previewRestockHTML(text){
+  const pd=parseRestock(text);let html="";
+  const good=pd.view.filter(v=>v.type==="in");
+  if(good.length)html+='<div class="pline"><div class="pded">'+good.map(v=>'<span class="chip">+'+v.qty+" "+esc(v.code.toUpperCase())+'</span>').join("")+'</div></div>';
+  for(const v of pd.view.filter(v=>v.type==="bad"))html+='<div class="pline bad"><div class="pmsg">'+esc(v.code.toUpperCase()+": "+v.warn)+'</div></div>';
+  if(good.length)html+='<div class="psummary"><b>+'+pd.total+'</b> boxes in</div>';
+  return html;
+}
+function restockedThisMonth(){let n=0;for(const rs of (S.restocks||[]))if(rs.date>=S.monthStart)for(const i of rs.items)n+=i.qty;return n;}
+function renderRestocks(){
+  const card=document.getElementById("restockCard");
+  if(!S.restocks||!S.restocks.length){card.style.display="none";return;}
+  card.style.display="";
+  document.getElementById("restockHead").textContent="Stock-ins · +"+restockedThisMonth()+" this month";
+  const items=S.restocks.slice().sort((a,b)=>a.date<b.date?1:(a.date>b.date?-1:0));
+  document.getElementById("restockList").innerHTML=items.map(rs=>{
+    const chips=rs.items.map(i=>"+"+i.qty+" "+i.code.toUpperCase()).join("  ");
+    return '<div class="hrow" data-restock="'+rs.id+'" style="cursor:pointer"><div class="hinfo"><div class="hname">'+fmtDate(rs.date)+'</div><div class="hded">'+esc(chips)+'</div></div><div style="color:var(--line-strong);font-size:20px;font-weight:700">›</div></div>';
+  }).join("");
+}
+const restockSheet=document.getElementById("restockSheet"),rDate=document.getElementById("rDate"),rText=document.getElementById("rText"),rPreview=document.getElementById("rPreview"),rDelete=document.getElementById("rDelete");
+let rEditId=null;
+function renderRestockPreview(){rPreview.innerHTML=rText.value.trim()?previewRestockHTML(rText.value):"";}
+function openRestock(id){
+  rEditId=id;
+  if(id){const rs=S.restocks.find(x=>x.id===id);if(!rs)return;rDate.value=rs.date;rText.value=rs.text||rs.items.map(i=>i.code+" "+i.qty).join("\n");document.getElementById("restockTitle").textContent="Edit stock-in";rDelete.style.display="";}
+  else{rDate.value=todayStr();rText.value="";document.getElementById("restockTitle").textContent="Stock in";rDelete.style.display="none";}
+  renderRestockPreview();restockSheet.classList.add("open");
+}
+rText.addEventListener("input",renderRestockPreview);
+document.getElementById("restockBtn").addEventListener("click",()=>openRestock(null));
+document.getElementById("rAdd").addEventListener("click",()=>{
+  const date=rDate.value||todayStr(),pd=parseRestock(rText.value);
+  if(pd.view.some(v=>v.type==="bad")){toast("Fix the highlighted code first");return;}
+  if(!pd.items.length){toast("Enter a code + boxes, e.g. mv450 2");return;}
+  if(rEditId){const rs=S.restocks.find(x=>x.id===rEditId);if(rs){applyDeductions(rs.items,-1);rs.date=date;rs.items=pd.items;rs.text=rText.value;applyDeductions(pd.items,+1);}}
+  else{S.restocks.push({id:uid(),date,items:pd.items,text:rText.value});applyDeductions(pd.items,+1);}
+  save();restockSheet.classList.remove("open");renderAll();toast("Added to stock");
+});
+rDelete.addEventListener("click",()=>{
+  if(!rEditId)return;const rs=S.restocks.find(x=>x.id===rEditId);if(!rs)return;
+  if(!confirm("Delete this stock-in and remove its boxes from stock?"))return;
+  applyDeductions(rs.items,-1);S.restocks=S.restocks.filter(x=>x.id!==rEditId);save();restockSheet.classList.remove("open");renderAll();toast("Stock-in deleted");
+});
+document.querySelectorAll("[data-close-restock]").forEach(el=>el.addEventListener("click",()=>restockSheet.classList.remove("open")));
+
 /* ---------- MONTH-END ---------- */
 const monthList=document.getElementById("monthList"),monthShowAll=document.getElementById("monthShowAll");
 let counted={};
@@ -523,7 +620,7 @@ document.getElementById("commitMonthBtn").addEventListener("click",()=>{
   const entered=Object.keys(counted).filter(c=>counted[c]!==""&&counted[c]!==undefined);
   if(!entered.length){toast("Type at least one counted number first");return;}
   if(!confirm("Commit counted stock as the new baseline and start a new month? Blank sizes keep their expected number."))return;
-  const um=usedThisMonth(),snap={start:S.monthStart,end:todayStr(),usedBoxes:um.boxes,patients:um.patients,variances:{}};
+  const um=usedThisMonth(),snap={start:S.monthStart,end:todayStr(),usedBoxes:um.boxes,addedBoxes:restockedThisMonth(),patients:um.patients,variances:{}};
   for(const c of entered){const exp=S.stock[c]||0,cnt=Math.round(+counted[c]);snap.variances[c]=cnt-exp;S.stock[c]=cnt;}
   S.archive.unshift(snap);S.monthStart=todayStr();counted={};save();renderAll();toast("New month started");
 });
@@ -534,7 +631,7 @@ function renderArchive(){
   document.getElementById("archiveList").innerHTML=S.archive.map(a=>{
     const offs=Object.entries(a.variances).filter(([c,v])=>v!==0);
     const offTxt=offs.length?offs.map(([c,v])=>c.toUpperCase()+" "+(v>0?"+"+v:v)).join("  "):"all matched";
-    return '<div class="hrow"><div class="hinfo"><div class="hname">'+fmtDate(a.start)+" → "+fmtDate(a.end)+'</div><div class="hded">'+a.usedBoxes+" boxes · "+a.patients+" patients · "+esc(offTxt)+'</div></div></div>';
+    return '<div class="hrow"><div class="hinfo"><div class="hname">'+fmtDate(a.start)+" → "+fmtDate(a.end)+'</div><div class="hded">'+a.usedBoxes+" used · +"+(a.addedBoxes||0)+" in · "+a.patients+" patients · "+esc(offTxt)+'</div></div></div>';
   }).join("");
 }
 
@@ -609,7 +706,7 @@ function updateStats(){
   document.getElementById("statPat").textContent=um.patients;
   document.getElementById("monthLabel").textContent="Month from "+fmtDate(S.monthStart);
 }
-function renderAll(){updateStats();renderStock();renderEntries();renderToday();renderMonth();}
+function renderAll(){updateStats();renderStock();renderRestocks();renderEntries();renderToday();renderMonth();}
 function syncControls(){document.getElementById("threshInput").value=S.thresh;document.getElementById("texToggle").checked=S.showTex;}
 
 logDate.value=todayStr();
