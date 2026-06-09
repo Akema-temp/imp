@@ -159,7 +159,7 @@
           <div style="flex:1"><span class="label">Date</span><input type="date" id="logDate"></div>
         </div>
         <span class="label">One patient per line — adds to the day's list</span>
-        <textarea id="logInput" placeholder="Type here." autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+        <textarea id="logInput" placeholder="Type here…" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
         <p class="hint">Code = pair (<b>2 boxes</b>); slash = 1 box each (<b>mt350s/375s</b>). Prices &amp; notes are kept, ignored by stock.</p>
         <div class="preview" id="logPreview"></div>
         <button class="btn btn-primary" id="applyBtn" style="margin-top:6px" disabled>Add to this day</button>
@@ -217,6 +217,7 @@
         <h2>Past months</h2><div id="archiveList"></div>
       </div>
     </section>
+    <div id="verTag" class="small" style="text-align:center;padding:2px 0 4px;opacity:.65"></div>
   </main>
 
   <nav><div class="navinner">
@@ -237,7 +238,7 @@
       <span class="label">Date</span>
       <input type="date" id="eDate">
       <span class="label" style="margin-top:12px">The day's list — type freely</span>
-      <textarea id="eDayText" placeholder="ใหม่ยา ผ่าเสา  mv400  34000  rep: somchai&#10;เจียว เนียวไง  mt350s  43000&#10;(any extra notes here are saved too)" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      <textarea id="eDayText" placeholder="Type here…" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
       <div class="savedtag"><span class="dot"></span><span>Saved automatically as you type</span></div>
       <p class="hint">Only implant codes change stock. Prices, rep names &amp; notes are kept as-is. Start a line with <b>#</b> to keep it a note (even if it mentions a size).</p>
       <div class="preview" id="ePreview"></div>
@@ -257,7 +258,7 @@
       <span class="label">Date received</span>
       <input type="date" id="rDate">
       <span class="label" style="margin-top:12px">What came in — one per line</span>
-      <textarea id="rText" placeholder="mv450 2&#10;mt350s 4&#10;eu400 2" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      <textarea id="rText" placeholder="Type here…" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
       <p class="hint">Format: <b>code</b> then <b>boxes</b>, e.g. <b>mv450 2</b>. Just a code adds 2 (a pair).</p>
       <div class="preview" id="rPreview"></div>
     </div>
@@ -273,6 +274,7 @@
   <div class="panel">
     <div class="grab"></div>
     <h2>Setup &amp; backup</h2>
+    <p class="small" id="verTagSetup" style="margin-top:-6px;margin-bottom:12px"></p>
     <div class="card">
       <h2>Low-stock warning</h2>
       <div class="row"><span style="font-size:13px;flex:1">Highlight when boxes ≤</span><input type="number" id="threshInput" min="0" style="width:80px;text-align:center"></div>
@@ -317,6 +319,9 @@
 
 <script>
 "use strict";
+
+/* Bump this whenever the program changes, so you can confirm the device loaded the latest. */
+const VERSION="2026-06-09 19:40";
 
 /* ---------- catalog ---------- */
 const BRANDS = {
@@ -710,6 +715,8 @@ function renderAll(){updateStats();renderStock();renderRestocks();renderEntries(
 function syncControls(){document.getElementById("threshInput").value=S.thresh;document.getElementById("texToggle").checked=S.showTex;}
 
 logDate.value=todayStr();
+document.getElementById("verTag").textContent="Version "+VERSION;
+document.getElementById("verTagSetup").textContent="Version "+VERSION;
 logDate.addEventListener("change",renderToday);
 renderPreview();syncControls();renderAll();syncRenderControls();
 if(syncCfg.auto&&syncCfg.url)syncPull(true);
