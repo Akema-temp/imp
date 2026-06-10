@@ -133,6 +133,26 @@
   .divider{height:1px;background:var(--line);margin:14px 0}
   .warnbox{background:var(--warn-soft);border:1px solid var(--warn);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--warn);font-weight:600;margin-top:10px}
   .small{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .chiprow{display:flex;gap:6px;flex-wrap:wrap}
+  .chipbtn{appearance:none;border:1px solid var(--line-strong);background:var(--paper);border-radius:999px;padding:7px 12px;font-family:var(--sans);font-weight:700;font-size:12px;color:var(--ink);cursor:pointer}
+  .chipbtn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .mtab.active{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
+  .badgeW,.badgeM{font-family:var(--mono);font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .badgeW{background:var(--accent-soft);color:var(--accent)}
+  .badgeM{background:#ede9fe;color:#6e45c9}
+  details.pcase{border:1px solid var(--line);border-radius:11px;background:var(--paper);margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow)}
+  details.pcase summary{list-style:none;cursor:pointer;padding:11px 13px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+  details.pcase summary::-webkit-details-marker{display:none}
+  details.pcase .sname{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:7px;min-width:0;flex-wrap:wrap}
+  details.pcase .samt{font-family:var(--mono);font-weight:700;font-size:14px;white-space:nowrap}
+  .crow{display:flex;justify-content:space-between;gap:8px;padding:8px 13px;border-top:1px solid var(--line);font-size:12px;align-items:baseline}
+  .crow .cinfo{min-width:0}
+  .crow .cmono{font-family:var(--mono);white-space:nowrap;font-weight:700}
+  .crow .csub{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+  .crow .cwarn{color:var(--danger);font-size:10.5px;font-weight:700}
+  .ptotrow{display:flex;justify-content:space-between;padding:5px 2px;font-size:13px}
+  .ptotrow b{font-family:var(--mono)}
+  .ptotrow.grand{border-top:1px solid var(--line);margin-top:4px;padding-top:9px;font-size:15px;font-weight:800}
 </style>
 </head>
 <body>
@@ -201,6 +221,29 @@
       </div>
     </section>
 
+    <!-- MONEY -->
+    <section class="view" id="view-money">
+      <div class="card">
+        <div class="minirow" style="margin-bottom:12px">
+          <button class="btn btn-ghost mtab active" data-mtab="comm">Commission</button>
+          <button class="btn btn-ghost mtab" data-mtab="profit">Profit</button>
+        </div>
+        <div class="chiprow">
+          <button class="chipbtn" data-preset="thisweek">This week</button>
+          <button class="chipbtn" data-preset="lastweek">Last week</button>
+          <button class="chipbtn" data-preset="thismonth">29–28 now</button>
+          <button class="chipbtn" data-preset="lastmonth">29–28 prev</button>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div style="flex:1"><span class="label">From</span><input type="date" id="mFrom"></div>
+          <div style="flex:1"><span class="label">To</span><input type="date" id="mTo"></div>
+        </div>
+        <p class="small" id="mRangeLabel"></p>
+      </div>
+      <div id="commWrap"></div>
+      <div id="profWrap" style="display:none"></div>
+    </section>
+
     <!-- MONTH END -->
     <section class="view" id="view-month">
       <div class="card">
@@ -224,6 +267,7 @@
     <button class="nav-btn active" data-view="log"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button>
     <button class="nav-btn" data-view="entries"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Entries</span></button>
     <button class="nav-btn" data-view="stock"><svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg><span>Stock</span></button>
+    <button class="nav-btn" data-view="money"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M9 9.5h4.5a2 2 0 1 1 0 4H9h5a2 2 0 1 1 0 4"/></svg><span>Money</span></button>
     <button class="nav-btn" data-view="month"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 14l2 2 4-4"/></svg><span>Month-end</span></button>
   </div></nav>
 </div>
@@ -321,33 +365,36 @@
 "use strict";
 
 /* Bump this whenever the program changes, so you can confirm the device loaded the latest. */
-const VERSION="2026-06-09 20:55";
+const VERSION="2026-06-10 13:00";
 
 /* ---------- catalog ---------- */
 const BRANDS = {
   mv:{brand:"Motiva", sizes:[305,335,355,375,400,450,500]},
   eu:{brand:"Euro",   sizes:[280,300,325,350,375,400,450,500,550,600,650,700]},
   sm:{brand:"Silimed",sizes:[335,365,390,420,445]},
+  sms:{brand:"Silimed Smooth",sizes:[255,275,295,315,335,355,385,415,455,495]},
   mt:{brand:"Mentor", sizes:[275,300,325,350,375,400,450,500,550,600,650,700]},
   x: {brand:"Mentor Xtragel", sizes:[285,335,355,380,415,450,465,490,535,595]},
 };
-const SIZES={Motiva:BRANDS.mv.sizes,Euro:BRANDS.eu.sizes,Silimed:BRANDS.sm.sizes,Mentor:BRANDS.mt.sizes,"Mentor Xtragel":BRANDS.x.sizes};
+const SIZES={Motiva:BRANDS.mv.sizes,Euro:BRANDS.eu.sizes,Silimed:BRANDS.sm.sizes,"Silimed Smooth":BRANDS.sms.sizes,Mentor:BRANDS.mt.sizes,"Mentor Xtragel":BRANDS.x.sizes};
 const CODE_RE=/\b(?:mv|eu|sm|mt|x)\s*\d{2,3}[st]?(?:\s*\/\s*(?:(?:mv|eu|sm|mt|x)\s*)?\d{2,3}[st]?)*/i;
 
 function codeInfo(code){let m;
   if(m=code.match(/^mt(\d{2,3})([st])$/))return{brand:"Mentor",size:+m[1],surface:m[2]==="s"?"smooth":"textured"};
   if(m=code.match(/^x(\d{2,3})$/))return{brand:"Mentor Xtragel",size:+m[1],surface:""};
+  if(m=code.match(/^sm(\d{2,3})s$/))return{brand:"Silimed Smooth",size:+m[1],surface:"smooth"};
   if(m=code.match(/^(mv|eu|sm)(\d{2,3})$/))return{brand:{mv:"Motiva",eu:"Euro",sm:"Silimed"}[m[1]],size:+m[2],surface:""};
   return null;}
 function groups(includeTex){
   const g=[
-    {label:"Motiva", surface:"", codes:BRANDS.mv.sizes.map(s=>"mv"+s)},
-    {label:"Euro",   surface:"", codes:BRANDS.eu.sizes.map(s=>"eu"+s)},
-    {label:"Mentor", surface:"smooth", codes:BRANDS.mt.sizes.map(s=>"mt"+s+"s")},
-    {label:"Mentor", surface:"Xtragel", codes:BRANDS.x.sizes.map(s=>"x"+s)},
-    {label:"Silimed",surface:"", codes:BRANDS.sm.sizes.map(s=>"sm"+s)},
+    {label:"Motiva", surface:"", color:"#cc1f77", codes:BRANDS.mv.sizes.map(s=>"mv"+s)},
+    {label:"Euro",   surface:"", color:"#2e9e5b", codes:BRANDS.eu.sizes.map(s=>"eu"+s)},
+    {label:"Mentor", surface:"smooth", color:"#1763c6", codes:BRANDS.mt.sizes.map(s=>"mt"+s+"s")},
+    {label:"Mentor", surface:"Xtragel", color:"#6e45c9", codes:BRANDS.x.sizes.map(s=>"x"+s)},
+    {label:"Silimed",surface:"", color:"#e0851e", codes:BRANDS.sm.sizes.map(s=>"sm"+s)},
+    {label:"Silimed",surface:"smooth", color:"#0d9488", codes:BRANDS.sms.sizes.map(s=>"sm"+s+"s")},
   ];
-  if(includeTex) g.push({label:"Mentor",surface:"textured",codes:BRANDS.mt.sizes.map(s=>"mt"+s+"t")});
+  if(includeTex) g.push({label:"Mentor",surface:"textured",color:"#64748b",codes:BRANDS.mt.sizes.map(s=>"mt"+s+"t")});
   return g;}
 function allCodes(includeTex){return groups(includeTex).flatMap(g=>g.codes);}
 
@@ -390,15 +437,26 @@ function parseSpecCore(specText){
   const spec=specText.toLowerCase().replace(/\s+/g,"");
   if(!spec) return {deductions:[],errors:["empty"],boxes:0,valid:false};
   const segs=spec.split("/"); const isPair=segs.length===1;
-  let curBrand=null,curSurf="s"; const map={}; const errors=[];
+  let curBrand=null,curSuf=null; const map={}; const errors=[];
   for(const seg of segs){
     const mm=seg.match(/^(mv|eu|sm|mt|x)?(\d{2,3})([st])?$/);
     if(!mm){errors.push("bad part: "+seg);continue;}
-    const brand=mm[1]||curBrand; const size=+mm[2]; const suf=mm[3];
+    const brand=mm[1]||curBrand; const size=+mm[2]; let suf=mm[3]||null;
     if(!brand){errors.push("no brand for "+size);continue;}
-    curBrand=brand; let code;
-    if(brand==="mt"){if(suf)curSurf=suf;code="mt"+size+(suf||curSurf||"s");}
-    else{if(suf)errors.push(brand+size+': "'+suf+'" not valid here');code=brand+size;}
+    let code;
+    if(brand==="mt"){
+      if(!suf) suf=(curBrand==="mt"&&curSuf)?curSuf:"s";
+      code="mt"+size+suf;
+    } else if(brand==="sm"){
+      if(suf==="t"){errors.push("sm"+size+': "t" not valid');suf=null;}
+      if(!suf) suf=(curBrand==="sm"&&curSuf==="s")?"s":null;
+      code="sm"+size+(suf==="s"?"s":"");
+    } else {
+      if(suf)errors.push(brand+size+': "'+suf+'" not valid here');
+      suf=null;
+      code=brand+size;
+    }
+    curBrand=brand;curSuf=suf;
     map[code]=(map[code]||0)+(isPair?2:1);
   }
   const deductions=Object.entries(map).map(([code,qty])=>{
@@ -527,9 +585,9 @@ function renderStock(){
       if(q){if(!(code+" "+g.label+" "+g.surface).toLowerCase().includes(q))continue;}
       let cls="srow";if(qty<0)cls+=" neg";else if(qty===0)cls+=" zero";else if(qty<=S.thresh)cls+=" low";
       const right=edit?'<div class="stepper"><button data-step="'+code+'" data-d="-1">−</button><input type="number" data-code="'+code+'" value="'+qty+'"><button data-step="'+code+'" data-d="1">+</button></div>':'<div class="qty">'+qty+'</div>';
-      rows.push('<div class="'+cls+'"><div class="code">'+code.toUpperCase()+'</div><div class="desc">'+esc(g.surface||"—")+'</div>'+right+'</div>');
+      rows.push('<div class="'+cls+'" style="border-left:5px solid '+g.color+'"><div class="code">'+code.toUpperCase()+'</div><div class="desc">'+esc(g.surface||"—")+'</div>'+right+'</div>');
     }
-    if(rows.length)html+='<div class="brandhdr">'+esc(g.label)+(g.surface?" · "+g.surface:"")+'<span>'+sub+' boxes</span></div>'+rows.join("");
+    if(rows.length)html+='<div class="brandhdr" style="color:'+g.color+'"><span style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:3px;background:'+g.color+'"></span>'+esc(g.label)+(g.surface?" · "+g.surface:"")+'</span><span style="color:var(--muted)">'+sub+' boxes</span></div>'+rows.join("");
   }
   stockList.innerHTML=html||'<div class="empty">'+(edit?"No sizes match.":"No stock yet. Tap Edit to enter your counts.")+'</div>';
 }
@@ -544,7 +602,10 @@ function parseRestockLine(line){
   const m=line.match(/\b(mv|eu|sm|mt|x)\s*(\d{2,3})([st])?/i);
   if(!m)return null;
   const b=m[1].toLowerCase(),sz=+m[2],su=(m[3]||"").toLowerCase();
-  const code=(b==="mt")?("mt"+sz+(su||"s")):(b+sz);
+  let code;
+  if(b==="mt")code="mt"+sz+(su||"s");
+  else if(b==="sm"&&su==="s")code="sm"+sz+"s";
+  else code=b+sz;
   const info=codeInfo(code);
   let warn=null;
   if(!info)warn="unknown code";else if(!SIZES[info.brand].includes(info.size))warn=info.size+" not a "+info.brand+" size";
@@ -644,6 +705,175 @@ function renderArchive(){
   }).join("");
 }
 
+/* ---------- MONEY (commission + profit) ---------- */
+const RISK_MAP={2500:4000,5000:9000};
+const PROC_INFO={rhino:{sil:400,fix:300},temple:{sil:1500,fix:500},forehead:{sil:1500,fix:500},blep:{sil:0,fix:500}};
+function pairPriceFor(code){
+  if(/^mv/.test(code))return 28500;
+  if(/^eu/.test(code))return 17000;
+  if(/^x\d/.test(code))return 34000;
+  if(/^mt\d/.test(code))return 25000;
+  if(/^sm\d+s$/.test(code))return 20700;
+  if(/^sm/.test(code))return 16000;
+  return 0;
+}
+function normName(s){try{return s.normalize('NFC').replace(/[\u0E47-\u0E4E]/g,'').toLowerCase();}catch(e){return s.toLowerCase();}}
+const REPS={
+  [normName('ดรีม')]:{group:'A',period:'M',display:'ดรีม'},
+  [normName('ใหม่')]:{group:'A',period:'M',display:'ใหม่'},
+  [normName('เฟริน')]:{group:'A',period:'W',display:'เฟริน'},
+  [normName('ฝ้าย')]:{group:'A',period:'W',display:'ฝ้าย'},
+  [normName('บิวor')]:{group:'B',period:'W',display:'บิวor'},
+  [normName('แตนor')]:{group:'B',period:'W',display:'แตนor'},
+  [normName('โบว์or')]:{group:'B',period:'W',display:'โบว์or'},
+  [normName('ใหม่or')]:{group:'B',period:'W',display:'ใหม่or'},
+  [normName('แนน')]:{group:'C',period:'W',display:'แนน'},
+};
+const REP_ORDER=[normName('ดรีม'),normName('ใหม่'),normName('เฟริน'),normName('ฝ้าย'),normName('บิวor'),normName('แตนor'),normName('โบว์or'),normName('ใหม่or'),normName('แนน'),'other'];
+function rateFor(group,isSilimed){if(group==='B')return .10;if(group==='C')return .03;return isSilimed?.125:.12;}
+function fmtM(n){return Math.round(n).toLocaleString('en-US');}
+function parseMoneyLine(line,date){
+  let riskExtra=0,riskWarn=null;
+  const riskM=line.match(/\brisk\s*(\d{3,6})/i);
+  if(riskM){const rv=+riskM[1];if(RISK_MAP[rv]!=null)riskExtra=RISK_MAP[rv];else riskWarn="risk "+rv+": unknown amount (+0)";}
+  const cleaned=line.replace(/\brisk\s*\d{3,6}/ig," ").trim();
+  const toks=cleaned.split(/\s+/);
+  let repTok=toks[toks.length-1]||"";
+  if(/^\d+([.,]\d+)?$/.test(repTok)||/^(rhino|temple|forehead|blep)/i.test(repTok)||CODE_RE.test(repTok))repTok="";
+  const repKey=repTok?normName(repTok.replace(/[.,;:!]+$/,"")):"";
+  const rep=repKey&&REPS[repKey]?REPS[repKey]:null;
+  const bucket=rep?repKey:"other";
+  const m=cleaned.match(CODE_RE);
+  if(m){
+    const core=parseSpecCore(m[0]);
+    if(!core.deductions.length)return null;
+    const name=cleaned.slice(0,m.index).replace(/[-=:,\s]+$/,"").trim()||"(no name)";
+    const after=cleaned.slice(m.index+m[0].length);
+    const pm=after.match(/\b(\d{4,7})\b/);
+    const sale=pm?+pm[1]:0;
+    const silCost=core.deductions.reduce((s,d)=>s+pairPriceFor(d.code)/2*d.qty,0);
+    const isSil=core.deductions.some(d=>/^sm/.test(d.code));
+    const rate=rateFor(rep?rep.group:'O',isSil);
+    const comm=Math.round(sale*rate);
+    return {date,kind:"breast",name,desc:m[0].toUpperCase().replace(/\s+/g,""),sale,rate,comm,silCost,fix:0,riskExtra,
+      profit:sale-comm-silCost+riskExtra,rep:rep?rep.display:(repTok||"—"),bucket,period:rep?rep.period:'W',
+      warn:(!pm?"no price found":null)||riskWarn};
+  }
+  const procs=["rhino","temple","forehead","blep"].filter(p=>new RegExp("\\b"+p,"i").test(cleaned));
+  if(!procs.length)return null;
+  const firstIdx=Math.min(...procs.map(p=>cleaned.toLowerCase().search(new RegExp("\\b"+p))));
+  const name=cleaned.slice(0,firstIdx).replace(/[-=:,\s]+$/,"").trim()||"(no name)";
+  const pm=cleaned.slice(firstIdx).match(/\b(\d{3,7})\b/);
+  const sale=pm?+pm[1]:0;
+  const silCost=procs.reduce((s,p)=>s+PROC_INFO[p].sil,0);
+  const nonBlep=procs.filter(p=>p!=="blep");
+  const fix=nonBlep.length?Math.max(...nonBlep.map(p=>PROC_INFO[p].fix)):PROC_INFO.blep.fix;
+  const rate=rateFor(rep?rep.group:'O',false);
+  const comm=Math.round(sale*rate);
+  return {date,kind:"proc",name,desc:procs.join("+"),sale,rate,comm,silCost,fix,riskExtra,
+    profit:sale-comm-silCost-fix+riskExtra,rep:rep?rep.display:(repTok||"—"),bucket,period:rep?rep.period:'W',
+    warn:(!pm?"no price found":null)||riskWarn};
+}
+function moneyCases(startStr,endStr){
+  const out=[];
+  for(const date of Object.keys(S.days)){
+    if(date<startStr||date>endStr)continue;
+    for(const raw of S.days[date].text.split(/\r?\n/)){
+      const line=raw.trim();
+      if(!line||/^(#|\/\/)/.test(line))continue;
+      const c=parseMoneyLine(line,date);
+      if(c)out.push(c);
+    }
+  }
+  out.sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));
+  return out;
+}
+function d2s(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function weekSatFri(offset){
+  const t=new Date();const sinceSat=(t.getDay()+1)%7;
+  const s=new Date(t.getFullYear(),t.getMonth(),t.getDate()-sinceSat+offset*7);
+  const e=new Date(s.getFullYear(),s.getMonth(),s.getDate()+6);
+  return [d2s(s),d2s(e)];
+}
+function month29(offset){
+  const t=new Date();let mo=t.getMonth();
+  if(t.getDate()<29)mo-=1;
+  mo+=offset;
+  const s=new Date(t.getFullYear(),mo,29);
+  const e=new Date(t.getFullYear(),mo+1,28);
+  return [d2s(s),d2s(e)];
+}
+let mMode="comm";
+const mFrom=document.getElementById("mFrom"),mTo=document.getElementById("mTo");
+function setRange(a,b,presetEl){
+  mFrom.value=a;mTo.value=b;
+  document.querySelectorAll(".chipbtn").forEach(c=>c.classList.toggle("active",c===presetEl));
+  document.getElementById("mRangeLabel").textContent=fmtDate(a)+" → "+fmtDate(b);
+  renderMoney();
+}
+document.querySelectorAll(".chipbtn").forEach(c=>c.addEventListener("click",()=>{
+  const p=c.dataset.preset;
+  const r=p==="thisweek"?weekSatFri(0):p==="lastweek"?weekSatFri(-1):p==="thismonth"?month29(0):month29(-1);
+  setRange(r[0],r[1],c);
+}));
+[mFrom,mTo].forEach(i=>i.addEventListener("change",()=>{
+  document.querySelectorAll(".chipbtn").forEach(c=>c.classList.remove("active"));
+  document.getElementById("mRangeLabel").textContent=fmtDate(mFrom.value)+" → "+fmtDate(mTo.value);
+  renderMoney();
+}));
+document.querySelectorAll(".mtab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".mtab").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");mMode=t.dataset.mtab;
+  document.getElementById("commWrap").style.display=mMode==="comm"?"":"none";
+  document.getElementById("profWrap").style.display=mMode==="profit"?"":"none";
+  renderMoney();
+}));
+function caseRow(c,showComm){
+  const main=showComm?("฿"+fmtM(c.comm)):("฿"+fmtM(c.profit));
+  const sub=showComm
+    ?("฿"+fmtM(c.sale)+" × "+(c.rate*100).toFixed(1).replace(/\.0$/,"")+"%")
+    :("฿"+fmtM(c.sale)+" − c"+fmtM(c.comm)+" − s"+fmtM(c.silCost)+(c.fix?(" − f"+fmtM(c.fix)):"")+(c.riskExtra?(" + r"+fmtM(c.riskExtra)):""));
+  return '<div class="crow"><div class="cinfo"><div>'+esc(c.name)+' <span class="csub">'+esc(c.desc)+' · '+fmtDate(c.date)+(showComm?'':' · '+esc(c.rep))+'</span></div>'
+    +(c.warn?'<div class="cwarn">⚠ '+esc(c.warn)+'</div>':'')+'</div><div class="cmono">'+main+'<div class="csub" style="text-align:right">'+sub+'</div></div></div>';
+}
+function renderMoney(){
+  if(!mFrom.value||!mTo.value)return;
+  const cases=moneyCases(mFrom.value,mTo.value);
+  /* commission */
+  const byRep={};
+  for(const c of cases){(byRep[c.bucket]=byRep[c.bucket]||[]).push(c);}
+  let chtml="";let grand=0;
+  const keys=REP_ORDER.filter(k=>byRep[k]).concat(Object.keys(byRep).filter(k=>!REP_ORDER.includes(k)));
+  for(const k of keys){
+    const list=byRep[k];const rep=REPS[k];
+    const name=rep?rep.display:"Other";
+    const badge=rep?(rep.period==="M"?'<span class="badgeM">monthly 29–28</span>':'<span class="badgeW">weekly Sat–Fri</span>'):'<span class="badgeW">weekly · 12%</span>';
+    const tot=list.reduce((s,c)=>s+c.comm,0);grand+=tot;
+    const sales=list.reduce((s,c)=>s+c.sale,0);
+    chtml+='<details class="pcase"><summary><span class="sname">'+esc(name)+' '+badge+'</span><span class="samt">฿'+fmtM(tot)+'<div class="csub" style="text-align:right">'+list.length+' case'+(list.length===1?"":"s")+' · ฿'+fmtM(sales)+'</div></span></summary>'
+      +list.map(c=>caseRow(c,true)).join("")+'</details>';
+  }
+  if(!chtml)chtml='<div class="card"><div class="empty">No cases in this period.</div></div>';
+  else chtml+='<div class="card"><div class="ptotrow grand"><span>Total commission</span><b>฿'+fmtM(grand)+'</b></div></div>';
+  document.getElementById("commWrap").innerHTML=chtml;
+  /* profit */
+  let rev=0,com=0,sil=0,fix=0,risk=0,prof=0;
+  for(const c of cases){rev+=c.sale;com+=c.comm;sil+=c.silCost;fix+=c.fix;risk+=c.riskExtra;prof+=c.profit;}
+  let phtml='<div class="card">'
+    +'<div class="ptotrow"><span>Revenue</span><b>฿'+fmtM(rev)+'</b></div>'
+    +'<div class="ptotrow"><span>Commission</span><b>− ฿'+fmtM(com)+'</b></div>'
+    +'<div class="ptotrow"><span>Silicone cost</span><b>− ฿'+fmtM(sil)+'</b></div>'
+    +'<div class="ptotrow"><span>Fix costs</span><b>− ฿'+fmtM(fix)+'</b></div>'
+    +'<div class="ptotrow"><span>Risk extra</span><b>+ ฿'+fmtM(risk)+'</b></div>'
+    +'<div class="ptotrow grand"><span>Profit ('+cases.length+' cases)</span><b>฿'+fmtM(prof)+'</b></div></div>';
+  if(cases.length)phtml+='<details class="pcase" open><summary><span class="sname">All cases</span><span class="samt"></span></summary>'+cases.map(c=>caseRow(c,false)).join("")+'</details>';
+  document.getElementById("profWrap").innerHTML=phtml;
+}
+function moneyDefault(){
+  if(mMode==="comm"){const r=weekSatFri(0);setRange(r[0],r[1],document.querySelector('.chipbtn[data-preset="thisweek"]'));}
+  else{const r=month29(0);setRange(r[0],r[1],document.querySelector('.chipbtn[data-preset="thismonth"]'));}
+}
+
 /* ---------- setup ---------- */
 const setupSheet=document.getElementById("setupSheet");
 document.getElementById("openSetup").addEventListener("click",()=>{document.getElementById("threshInput").value=S.thresh;document.getElementById("texToggle").checked=S.showTex;setupSheet.classList.add("open");});
@@ -704,6 +934,7 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>
   if(b.dataset.view==="stock")renderStock();
   if(b.dataset.view==="entries")renderEntries();
   if(b.dataset.view==="month"){counted={};renderMonth();}
+  if(b.dataset.view==="money"){if(!mFrom.value)moneyDefault();else renderMoney();}
   window.scrollTo(0,0);
 }));
 
